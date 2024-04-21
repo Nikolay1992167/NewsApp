@@ -31,7 +31,7 @@ public interface CommentService {
      * @param pageable object {@link Pageable} containing information about the page number and size.
      * @return found {@link Page} with {@link ResponseComment} with information about the comment.
      */
-    Page<ResponseNewsWithComments> getAllByNewsId(UUID newsId, Pageable pageable);
+    ResponseNewsWithComments getAllByNewsId(UUID newsId, Pageable pageable);
 
     /**
      * Method for getting the {@link ResponseComment} page with information about the comment
@@ -57,23 +57,26 @@ public interface CommentService {
      * and returns {@link ResponseCommentNews} with information about the created comment.
      *
      * @param dto object {@link CreateCommentDto} containing data for creating news.
+     * @param token a string containing the authentication token in the request header.
      * @return object {@link ResponseCommentNews} with information about {@link Comment}.
      */
-    ResponseCommentNews create(CreateCommentDto dto);
+    ResponseCommentNews create(CreateCommentDto dto, String token);
 
     /**
      * Updates an existing {@link Comment} using data from {@link UpdateCommentDto}.
      *
      * @param id of comment.
      * @param dto object {@link UpdateCommentDto} containing data for updating the comment.
+     * @param token a string containing the authentication token in the request header.
      * @return object {@link ResponseCommentNews} with information about the updated {@link Comment}.
      */
-    ResponseCommentNews update(UUID id, UpdateCommentDto dto);
+    ResponseCommentNews update(UUID id, UpdateCommentDto dto, String token);
 
     /**
      * Deletes {@link Comment} by ID.
      *
      * @param id of comment.
+     * @param token a string containing the authentication token in the request header.
      */
-    void delete(UUID id);
+    void delete(UUID id, String token);
 }

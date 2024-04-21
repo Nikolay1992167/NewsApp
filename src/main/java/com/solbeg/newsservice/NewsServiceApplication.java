@@ -1,18 +1,13 @@
 package com.solbeg.newsservice;
 
-import io.hypersistence.utils.spring.repository.BaseJpaRepositoryImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 
-@SpringBootApplication
-@EnableJpaRepositories(
-		value = "com.solbeg.newsservice.repository",
-		repositoryBaseClass = BaseJpaRepositoryImpl.class)
+@SpringBootApplication(exclude = {UserDetailsServiceAutoConfiguration.class})
 public class NewsServiceApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(NewsServiceApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(NewsServiceApplication.class, args);
+    }
 }

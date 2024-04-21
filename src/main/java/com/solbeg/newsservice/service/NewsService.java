@@ -32,7 +32,7 @@ public interface NewsService {
      * Returns {@link Page} containing {@link ResponseNews} objects
      * with preset pagination and filtering parameters.
      *
-     * @param filter the {@link Filter} object containing the filtering criteria.
+     * @param filter   the {@link Filter} object containing the filtering criteria.
      * @param pageable object {@link Pageable} containing information about the page number and size.
      * @return object {@link Page} containing objects {@link ResponseNews} with information about the news.
      */
@@ -42,24 +42,27 @@ public interface NewsService {
      * Creates a new {@link News} created based on the specified {@link CreateNewsDto} object
      * and returns {@link ResponseNews} with information about the news.
      *
-     * @param dto object {@link CreateNewsDto} containing data for creating news.
+     * @param dto   object {@link CreateNewsDto} containing data for creating news.
+     * @param token a string containing the authentication token in the request header.
      * @return object {@link ResponseNews} with information about {@link News}.
      */
-    ResponseNews create(CreateNewsDto dto);
+    ResponseNews create(CreateNewsDto dto, String token);
 
     /**
      * Updates an existing {@link News} using data from {@link CreateNewsDto}.
      *
-     * @param id of news.
-     * @param dto object {@link CreateNewsDto} containing data for updating the news.
+     * @param id    of news.
+     * @param dto   object {@link CreateNewsDto} containing data for updating the news.
+     * @param token a string containing the authentication token in the request header.
      * @return object {@link ResponseNews} with information about the updated {@link News}.
      */
-    ResponseNews update(UUID id, CreateNewsDto dto);
+    ResponseNews update(UUID id, CreateNewsDto dto, String token);
 
     /**
      * Deletes {@link News} by ID.
      *
-     * @param id of news.
+     * @param id    of news.
+     * @param token a string containing the authentication token in the request header.
      */
-    void delete(UUID id);
+    void delete(UUID id, String token);
 }

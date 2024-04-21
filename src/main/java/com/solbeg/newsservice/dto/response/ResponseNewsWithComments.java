@@ -1,12 +1,18 @@
 package com.solbeg.newsservice.dto.response;
 
+import lombok.Builder;
+
 import java.time.LocalDateTime;
 import java.util.List;
-
-public record ResponseNewsWithComments(Long id,
-                                       LocalDateTime time,
+import java.util.UUID;
+@Builder
+public record ResponseNewsWithComments(UUID id,
+                                       UUID createdBy,
+                                       UUID updatedBy,
+                                       LocalDateTime createdAt,
+                                       LocalDateTime updatedAt,
                                        String title,
                                        String text,
-                                       String author,
+                                       UUID idAuthor,
                                        List<ResponseComment> comments) {
 }

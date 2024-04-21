@@ -6,37 +6,30 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.FieldNameConstants;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
+import java.util.UUID;
 
-@Getter
-@Setter
-@Entity
-@ToString
+@Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldNameConstants
 @EqualsAndHashCode(callSuper = true)
+@Entity
 @Table(schema = "news", name = "news")
 public class News extends BaseEntity{
 
-    @Column(nullable = false)
+    @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(name = "text", nullable = false)
     private String text;
 
-    @Column(nullable = false, length = 40)
-    private String author;
+    @Column(name = "id_author", nullable = false)
+    private UUID idAuthor;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

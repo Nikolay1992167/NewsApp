@@ -10,5 +10,5 @@ public record ResponseNews(UUID id,
                            LocalDateTime updatedAt,
                            String title,
                            String text,
-                           String author) {
+                           UUID idAuthor) {
 }
