@@ -47,12 +47,21 @@ public interface CommentOpenApi {
                                                 "newsId": "389ec033-0631-4c0a-825b-e9ed165104d7"
                                             }
                                             """))),
+                    @ApiResponse(responseCode = "404", description = "The endpoint has not been completed when comment not found.",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
+                                    {
+                                        "timestamp": "2024-04-23T20:51:34.5814514",
+                                        "error_message": "Comment not found with 5a0d7e7c-bbac-4165-a4bd-00cc9ca0b05e",
+                                        "error_status": 404
+                                    }
+                                    """))),
                     @ApiResponse(responseCode = "400", description = "The endpoint has not been completed when an invalid uuid is entered.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                     {
-                                        "timestamp": "2024-04-18T15:08:09.3160186",
-                                        "error_message": "Comment not found with 5a0d7e7c-bbac-4165-a4bd-00cc9ca0b05e",
+                                        "timestamp": "2024-04-23T22:18:25.2408902",
+                                        "error_message": "UUID was entered incorrectly!",
                                         "error_status": 400
                                     }
                                     """)))
@@ -64,16 +73,9 @@ public interface CommentOpenApi {
             method = "GET",
             tags = "Comments by news id",
             description = "Get comment by news uuid",
-            requestBody = @RequestBody(
-                    required = true,
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = Filter.class),
-                            examples = @ExampleObject("""
-                                    {
-                                        "part": "problem"
-                                    }
-                                    """))),
+            parameters = {
+                    @Parameter(name = "uuid", description = "Id of news", example = "6a268b16-85ea-491f-be9f-f2e28d1a4895")
+            },
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -121,13 +123,13 @@ public interface CommentOpenApi {
                                                 ]
                                             }
                                             """))),
-                    @ApiResponse(responseCode = "400", description = "The endpoint has not been completed when an invalid uuid is entered.",
+                    @ApiResponse(responseCode = "404", description = "The endpoint has not been completed when news not found.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                     {
                                         "timestamp": "2024-04-18T15:13:10.3448616",
                                         "error_message": "News not found with 6a268b16-85ea-491f-be9f-00f2e28d1a48",
-                                        "error_status": 400
+                                        "error_status": 404
                                     }
                                     """)))
             }
@@ -427,13 +429,13 @@ public interface CommentOpenApi {
                                                 "newsId": "389ec033-0631-4c0a-825b-e9ed165104d7"
                                             }
                                             """))),
-                    @ApiResponse(responseCode = "400", description = "The endpoint has not been completed because the news with newsId not found.",
+                    @ApiResponse(responseCode = "404", description = "The endpoint has not been completed because the news with newsId not found.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                             {
                                                 "timestamp": "2024-04-18T15:49:01.5772001",
                                                 "error_message": "News not found with 389ec033-0631-4c0a-825b-e9ed165104d8",
-                                                "error_status": 400
+                                                "error_status": 404
                                             }
                                     """))),
                     @ApiResponse(responseCode = "400", description = "The endpoint has not been completed because the text not correct.",
@@ -502,15 +504,15 @@ public interface CommentOpenApi {
                                                 "newsId": "389ec033-0631-4c0a-825b-e9ed165104d7"
                                             }
                                             """))),
-                    @ApiResponse(responseCode = "400", description = "The endpoint has not been completed when a comment not found.",
+                    @ApiResponse(responseCode = "404", description = "The endpoint has not been completed when a comment not found.",
                             content = @Content(mediaType = "application/json", examples = @ExampleObject("""
                                             {
                                                 "timestamp": "2024-04-18T16:08:19.3778544",
                                                 "error_message": "Comment not found with 9725df2c-b725-4572-98e5-aa60d430c758",
-                                                "error_status": 400
+                                                "error_status": 404
                                             }
                                     """))),
-                    @ApiResponse(responseCode = "400", description = "The endpoint has not been completed when id entered incorrectly",
+                    @ApiResponse(responseCode = "400", description = "The endpoint has not been completed when id entered incorrectly.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                     {
@@ -519,7 +521,7 @@ public interface CommentOpenApi {
                                         "error_status": 400
                                     }
                                     """))),
-                    @ApiResponse(responseCode = "401", description = "Not Authenticated User when an  token is not entered.",
+                    @ApiResponse(responseCode = "401", description = "Not Authenticated User when an token is not entered.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                             {
@@ -551,12 +553,12 @@ public interface CommentOpenApi {
             responses = {
                     @ApiResponse(
                             responseCode = "200", description = "The endpoint has been completed."),
-                    @ApiResponse(responseCode = "400", description = "The endpoint has not been completed when a comment not found.",
+                    @ApiResponse(responseCode = "404", description = "The endpoint has not been completed when a comment not found.",
                             content = @Content(mediaType = "application/json", examples = @ExampleObject("""
                                             {
                                                 "timestamp": "2024-04-18T16:32:48.497019",
                                                 "error_message": "Comment not found with 9725df2c-b725-4572-98e5-00aa60d430c7",
-                                                "error_status": 400
+                                                "error_status": 404
                                             }
                                     """))),
                     @ApiResponse(responseCode = "400", description = "The endpoint has not been completed when id entered incorrectly",
@@ -572,7 +574,7 @@ public interface CommentOpenApi {
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                             {
-                                                "timestamp": "2024-04-18T16:29:32.2992319",
+                                                "timestamp": "2024-04-24T08:27:52.9444037",
                                                 "error_message": "Full authentication is required to access this resource",
                                                 "error_status": 401
                                             }

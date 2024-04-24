@@ -1,12 +1,13 @@
 package com.solbeg.newsservice.service.impl;
 
 import com.solbeg.newsservice.dto.request.CreateNewsDto;
+import com.solbeg.newsservice.dto.request.CreateNewsDtoJournalist;
 import com.solbeg.newsservice.dto.request.Filter;
 import com.solbeg.newsservice.dto.response.ResponseNews;
 import com.solbeg.newsservice.dto.response.UserResponse;
 import com.solbeg.newsservice.enams.ErrorMessage;
 import com.solbeg.newsservice.entity.News;
-import com.solbeg.newsservice.exception.AccessDeniedException;
+import com.solbeg.newsservice.exception.AccessException;
 import com.solbeg.newsservice.exception.CreateObjectException;
 import com.solbeg.newsservice.exception.NotFoundException;
 import com.solbeg.newsservice.mapper.NewsMapper;
@@ -59,14 +60,13 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     @Transactional
-    public ResponseNews create(CreateNewsDto createNewsDto, String token) {
-        validationAuthorDetails(createNewsDto.idAuthor(), token);
-        UserResponse userInDB = userDataService.getUserData(token);
+    public ResponseNews createNewsAdmin(CreateNewsDto createNewsDto, String token) {
+        UserResponse userInDB = userDataService.getUserData(createNewsDto.idAuthor(), token);
         return Optional.of(createNewsDto)
                 .map(newsMapper::toNews)
-                .map(comment -> {
-                    comment.setCreatedBy(userInDB.id());
-                    return newsRepository.persistAndFlush(comment);
+                .map(news -> {
+                    news.setCreatedBy(userInDB.id());
+                    return newsRepository.persistAndFlush(news);
                 })
                 .map(newsMapper::toResponseNews)
                 .orElseThrow(() -> new CreateObjectException(ErrorMessage.ERROR_CREATE_OBJECT.getMessage()));
@@ -74,11 +74,39 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     @Transactional
-    public ResponseNews update(UUID id, CreateNewsDto createNewsDto, String token) {
-        UserResponse userInDB = getUserResponse(id, token);
+    public ResponseNews createNewsJournalist(CreateNewsDtoJournalist createNewsDtoJournalist, String token) {
+        UUID userId = getId(token);
+        return Optional.of(createNewsDtoJournalist)
+                .map(newsMapper::toNews)
+                .map(news -> {
+                    news.setCreatedBy(userId);
+                    news.setIdAuthor(userId);
+                    return newsRepository.persistAndFlush(news);
+                })
+                .map(newsMapper::toResponseNews)
+                .orElseThrow(() -> new CreateObjectException(ErrorMessage.ERROR_CREATE_OBJECT.getMessage()));
+    }
+
+    @Override
+    @Transactional
+    public ResponseNews updateAdmin(UUID id, CreateNewsDto createNewsDto, String token) {
         return newsRepository.findById(id)
                 .map(current -> {
                     News updateNews = newsMapper.merge(current, createNewsDto);
+                    updateNews.setUpdatedBy(getId(token));
+                    return newsRepository.persistAndFlush(updateNews);
+                })
+                .map(newsMapper::toResponseNews)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.NEWS_NOT_FOUND.getMessage() + id));
+    }
+
+    @Override
+    @Transactional
+    public ResponseNews updateJournalist(UUID id, CreateNewsDtoJournalist createNewsDtoJournalist, String token) {
+        UserResponse userInDB = getAuthor(id, token);
+        return newsRepository.findById(id)
+                .map(current -> {
+                    News updateNews = newsMapper.merge(current, createNewsDtoJournalist);
                     updateNews.setUpdatedBy(userInDB.id());
                     return newsRepository.persistAndFlush(updateNews);
                 })
@@ -89,8 +117,14 @@ public class NewsServiceImpl implements NewsService {
     @Override
     @Transactional
     public void delete(UUID id, String token) {
-        getUserResponse(id, token);
+        if (isAuthor(id, token)) {
+            throw new AccessException(ErrorMessage.ERROR_CHANGE.getMessage());
+        }
         newsRepository.deleteById(id);
+    }
+
+    private UUID getId(String token) {
+        return userDataService.getUserData(token).id();
     }
 
     /**
@@ -100,19 +134,18 @@ public class NewsServiceImpl implements NewsService {
      * @param token a string containing the authentication token in the request header.
      * @return object {@link UserResponse} with information about user.
      */
-    private UserResponse getUserResponse(UUID id, String token) {
+    private UserResponse getAuthor(UUID id, String token) {
         UserResponse userInDB = userDataService.getUserData(token);
         ResponseNews news = getById(id);
-        if (!userInDB.roles().contains("ADMIN") && (!userInDB.roles().contains("JOURNALIST") || !userInDB.id().equals(news.createdBy()))) {
-            throw new AccessDeniedException(ErrorMessage.ERROR_CHANGE.getMessage());
+        if (!userInDB.id().equals(news.createdBy())) {
+            throw new AccessException(ErrorMessage.ERROR_CHANGE.getMessage());
         }
         return userInDB;
     }
 
-    private Boolean validationAuthorDetails(UUID idAuthor, String token) {
-        if (userDataService.getUserData(idAuthor, token) == null) {
-            throw new NotFoundException("User with this id not registered!");
-        };
-        return true;
+    private Boolean isAuthor(UUID id, String token) {
+        UserResponse userInDB = userDataService.getUserData(token);
+        ResponseNews news = getById(id);
+        return userInDB.roles().contains("JOURNALIST") && !userInDB.id().equals(news.createdBy());
     }
 }

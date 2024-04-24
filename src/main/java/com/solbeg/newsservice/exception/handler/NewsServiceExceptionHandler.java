@@ -1,6 +1,6 @@
 package com.solbeg.newsservice.exception.handler;
 
-import com.solbeg.newsservice.exception.AccessDeniedException;
+import com.solbeg.newsservice.exception.AccessException;
 import com.solbeg.newsservice.exception.CreateObjectException;
 import com.solbeg.newsservice.exception.CustomServerException;
 import com.solbeg.newsservice.exception.NotFoundException;
@@ -49,7 +49,7 @@ public class NewsServiceExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<IncorrectData> notFoundException(NotFoundException exception) {
-        return getResponse(exception.getMessage(), HttpStatus.BAD_REQUEST);
+        return getResponse(exception.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(CreateObjectException.class)
@@ -57,8 +57,8 @@ public class NewsServiceExceptionHandler {
         return getResponse(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<IncorrectData> accessDeniedException(AccessDeniedException exception) {
+    @ExceptionHandler(AccessException.class)
+    public ResponseEntity<IncorrectData> accessDeniedException(AccessException exception) {
         return getResponse(exception.getMessage(), HttpStatus.FORBIDDEN);
     }
 

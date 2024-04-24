@@ -38,6 +38,7 @@ public class WebSecurityConfig {
                                 .accessDeniedHandler((request, response, authException) -> {
                                     int status = HttpStatus.FORBIDDEN.value();
                                     response.setCharacterEncoding("utf-8");
+                                    response.setContentType("application/json");
                                     response.setStatus(status);
                                     response.getWriter()
                                             .write(mapper.writeValueAsString(new IncorrectData(LocalDateTime.now(), authException.getMessage(), status)));

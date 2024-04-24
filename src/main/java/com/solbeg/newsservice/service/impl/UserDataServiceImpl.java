@@ -3,6 +3,7 @@ package com.solbeg.newsservice.service.impl;
 import com.solbeg.newsservice.dto.response.UserResponse;
 import com.solbeg.newsservice.exception.CustomServerException;
 import com.solbeg.newsservice.exception.NotFoundException;
+import com.solbeg.newsservice.exception.model.IncorrectData;
 import com.solbeg.newsservice.service.UserDataService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -38,11 +39,11 @@ public class UserDataServiceImpl implements UserDataService {
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, clientResponse ->
-                        clientResponse.bodyToMono(String.class)
-                                .flatMap(errorMessage -> Mono.error(new NotFoundException(errorMessage))))
+                        clientResponse.bodyToMono(IncorrectData.class)
+                                .flatMap(errorResponse -> Mono.error(new NotFoundException(errorResponse.errorMessage()))))
                 .onStatus(HttpStatusCode::is5xxServerError, clientResponse ->
-                        clientResponse.bodyToMono(String.class)
-                                .flatMap(errorMessage -> Mono.error(new CustomServerException(errorMessage))))
+                        clientResponse.bodyToMono(IncorrectData.class)
+                                .flatMap(errorResponse -> Mono.error(new CustomServerException(errorResponse.errorMessage()))))
                 .bodyToMono(UserResponse.class)
                 .block();
     }

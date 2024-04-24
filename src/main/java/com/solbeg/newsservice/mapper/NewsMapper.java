@@ -1,6 +1,7 @@
 package com.solbeg.newsservice.mapper;
 
 import com.solbeg.newsservice.dto.request.CreateNewsDto;
+import com.solbeg.newsservice.dto.request.CreateNewsDtoJournalist;
 import com.solbeg.newsservice.dto.response.ResponseNews;
 import com.solbeg.newsservice.entity.News;
 import org.mapstruct.Mapper;
@@ -21,17 +22,34 @@ public interface NewsMapper {
     /**
      * Converts {@link CreateNewsDto} containing news information to {@link News}.
      *
-     * @param createNewsDto object {@link News}.
+     * @param createNewsDto object {@link CreateNewsDto}.
      * @return {@link News} without ID, creation time and comments.
      */
     News toNews(CreateNewsDto createNewsDto);
 
     /**
+     * Converts {@link CreateNewsDto} containing news information to {@link News}.
+     *
+     * @param createNewsDtoJournalist object {@link CreateNewsDtoJournalist}.
+     * @return {@link News} without ID, creation time and comments.
+     */
+    News toNews(CreateNewsDtoJournalist createNewsDtoJournalist);
+
+    /**
      * Updates {@link News} based on information from {@link CreateNewsDto}.
      *
-     * @param oldNews updated {@link News}.
+     * @param oldNews       updated {@link News}.
      * @param createNewsDto object {@link CreateNewsDto} with information about the object.
      * @return {@link News} updated news.
      */
     News merge(@MappingTarget News oldNews, CreateNewsDto createNewsDto);
+
+    /**
+     * Updates {@link News} based on information from {@link CreateNewsDtoJournalist}.
+     *
+     * @param oldNews       updated {@link News}.
+     * @param createNewsDtoJournalist object {@link CreateNewsDtoJournalist} with information about the object.
+     * @return {@link News} updated news.
+     */
+    News merge(@MappingTarget News oldNews, CreateNewsDtoJournalist createNewsDtoJournalist);
 }

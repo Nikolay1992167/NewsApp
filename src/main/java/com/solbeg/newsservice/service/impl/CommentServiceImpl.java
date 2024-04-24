@@ -10,7 +10,7 @@ import com.solbeg.newsservice.dto.response.ResponseNewsWithComments;
 import com.solbeg.newsservice.dto.response.UserResponse;
 import com.solbeg.newsservice.enams.ErrorMessage;
 import com.solbeg.newsservice.entity.Comment;
-import com.solbeg.newsservice.exception.AccessDeniedException;
+import com.solbeg.newsservice.exception.AccessException;
 import com.solbeg.newsservice.exception.NotFoundException;
 import com.solbeg.newsservice.mapper.CommentMapper;
 import com.solbeg.newsservice.repository.CommentRepository;
@@ -120,7 +120,7 @@ public class CommentServiceImpl implements CommentService {
         UserResponse userInDB = userDataService.getUserData(token);
         ResponseCommentNews commentNews = getById(id);
         if (!userInDB.roles().contains("ADMIN") && (!userInDB.roles().contains("SUBSCRIBER") || !userInDB.id().equals(commentNews.createdBy()))) {
-            throw new AccessDeniedException(ErrorMessage.ERROR_CHANGE.getMessage());
+            throw new AccessException(ErrorMessage.ERROR_CHANGE.getMessage());
         }
         return userInDB;
     }

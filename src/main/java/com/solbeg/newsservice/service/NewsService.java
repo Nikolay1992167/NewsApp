@@ -1,6 +1,7 @@
 package com.solbeg.newsservice.service;
 
 import com.solbeg.newsservice.dto.request.CreateNewsDto;
+import com.solbeg.newsservice.dto.request.CreateNewsDtoJournalist;
 import com.solbeg.newsservice.dto.request.Filter;
 import com.solbeg.newsservice.dto.response.ResponseNews;
 import com.solbeg.newsservice.entity.News;
@@ -39,27 +40,47 @@ public interface NewsService {
     Page<ResponseNews> getAllByFilter(Filter filter, Pageable pageable);
 
     /**
-     * Creates a new {@link News} created based on the specified {@link CreateNewsDto} object
+     * Creates a new {@link News} for user with role 'ADMIN' created based on the specified {@link CreateNewsDto} object
      * and returns {@link ResponseNews} with information about the news.
      *
      * @param dto   object {@link CreateNewsDto} containing data for creating news.
      * @param token a string containing the authentication token in the request header.
      * @return object {@link ResponseNews} with information about {@link News}.
      */
-    ResponseNews create(CreateNewsDto dto, String token);
+    ResponseNews createNewsAdmin(CreateNewsDto dto, String token);
 
     /**
-     * Updates an existing {@link News} using data from {@link CreateNewsDto}.
+     * Creates a new {@link News} for user with role 'JOURNALIST' created based on the specified {@link CreateNewsDto} object
+     * and returns {@link ResponseNews} with information about the news.
      *
-     * @param id    of news.
-     * @param dto   object {@link CreateNewsDto} containing data for updating the news.
+     * @param dto   object {@link CreateNewsDto} containing data for creating news.
+     * @param token a string containing the authentication token in the request header.
+     * @return object {@link ResponseNews} with information about {@link News}.
+     */
+    ResponseNews createNewsJournalist(CreateNewsDtoJournalist dto, String token);
+
+    /**
+     * Updates an existing {@link News} using data from {@link CreateNewsDto} for user with role 'ADMIN'.
+     *
+     * @param id of news.
+     * @param dto object {@link CreateNewsDto} containing data for updating the news.
      * @param token a string containing the authentication token in the request header.
      * @return object {@link ResponseNews} with information about the updated {@link News}.
      */
-    ResponseNews update(UUID id, CreateNewsDto dto, String token);
+    ResponseNews updateAdmin(UUID id, CreateNewsDto dto, String token);
 
     /**
-     * Deletes {@link News} by ID.
+     * Updates an existing {@link News} using data from {@link CreateNewsDtoJournalist} for user with role 'JOURNALIST'.
+     *
+     * @param id  of news.
+     * @param dto object {@link CreateNewsDtoJournalist} containing data for updating the news.
+     * @param token a string containing the authentication token in the request header.
+     * @return object {@link ResponseNews} with information about the updated {@link News}.
+     */
+    ResponseNews updateJournalist(UUID id, CreateNewsDtoJournalist dto, String token);
+
+    /**
+     * Deletes {@link News} by id.
      *
      * @param id    of news.
      * @param token a string containing the authentication token in the request header.

@@ -2,6 +2,7 @@ package com.solbeg.newsservice.controller;
 
 import com.solbeg.newsservice.controller.openapi.NewsOpenApi;
 import com.solbeg.newsservice.dto.request.CreateNewsDto;
+import com.solbeg.newsservice.dto.request.CreateNewsDtoJournalist;
 import com.solbeg.newsservice.dto.request.Filter;
 import com.solbeg.newsservice.dto.response.ResponseNews;
 import com.solbeg.newsservice.service.NewsService;
@@ -42,21 +43,39 @@ public class NewsController implements NewsOpenApi {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('JOURNALIST') || hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping
-    public ResponseNews createNews(@Valid @RequestBody CreateNewsDto createNewsDto,
+    @PostMapping("/admin")
+    public ResponseNews createNewsAdmin(@Valid @RequestBody CreateNewsDto createNewsDto,
                                    @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String token) {
-        return newsService.create(createNewsDto, token);
+        return newsService.createNewsAdmin(createNewsDto, token);
     }
 
     @Override
-    @PreAuthorize("hasAuthority('JOURNALIST') || hasAuthority('ADMIN')")
-    @PutMapping("/{id}")
-    public ResponseNews updateNews(@PathVariable UUID id,
-                                   @Valid @RequestBody CreateNewsDto createNewsDto,
-                                   @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String token) {
-        return newsService.update(id, createNewsDto, token);
+    @PreAuthorize("hasAuthority('JOURNALIST')")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/journalist")
+    public ResponseNews createNewsJournalist(@Valid @RequestBody CreateNewsDtoJournalist createNewsDtoJournalist,
+                                             @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String token) {
+        return newsService.createNewsJournalist(createNewsDtoJournalist, token);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PutMapping("/admin/{id}")
+    public ResponseNews updateNewsAdmin(@PathVariable UUID id,
+                                        @Valid @RequestBody CreateNewsDto createNewsDto,
+                                        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String token) {
+        return newsService.updateAdmin(id, createNewsDto, token);
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('JOURNALIST')")
+    @PutMapping("/journalist/{id}")
+    public ResponseNews updateNewsJournalist(@PathVariable UUID id,
+                                        @Valid @RequestBody CreateNewsDtoJournalist createNewsDtoJournalist,
+                                        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String token) {
+        return newsService.updateJournalist(id, createNewsDtoJournalist, token);
     }
 
     @Override

@@ -46,6 +46,7 @@ dependencies {
 	runtimeOnly 'org.postgresql:postgresql'
 
 	testImplementation "com.squareup.okhttp3:mockwebserver:${mockWebserver}"
+	testImplementation "com.squareup.okhttp3:okhttp:${mockWebserver}"
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
