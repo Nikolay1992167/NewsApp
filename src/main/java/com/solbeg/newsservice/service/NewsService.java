@@ -15,10 +15,10 @@ public interface NewsService {
     /**
      * Searches for the saved {@link News} and returns {@link ResponseNews} with information about the news.
      *
-     * @param id of news.
+     * @param newsId of news.
      * @return {@link ResponseNews} with information about {@link News}.
      */
-    ResponseNews getById(UUID id);
+    ResponseNews findNewsById(UUID newsId);
 
     /**
      * Method for getting the {@link ResponseNews} page with information about the news
@@ -27,63 +27,60 @@ public interface NewsService {
      * @param pageable object {@link Pageable} containing information about the page number and size.
      * @return object {@link Page} with {@link ResponseNews} with information about the news.
      */
-    Page<ResponseNews> getAll(Pageable pageable);
+    Page<ResponseNews> getAllNews(Pageable pageable);
 
     /**
      * Returns {@link Page} containing {@link ResponseNews} objects
      * with preset pagination and filtering parameters.
      *
-     * @param filter   the {@link Filter} object containing the filtering criteria.
+     * @param filter the {@link Filter} object containing the filtering criteria.
      * @param pageable object {@link Pageable} containing information about the page number and size.
      * @return object {@link Page} containing objects {@link ResponseNews} with information about the news.
      */
-    Page<ResponseNews> getAllByFilter(Filter filter, Pageable pageable);
+    Page<ResponseNews> findNewsByFilter(Filter filter, Pageable pageable);
 
     /**
      * Creates a new {@link News} for user with role 'ADMIN' created based on the specified {@link CreateNewsDto} object
      * and returns {@link ResponseNews} with information about the news.
      *
-     * @param dto   object {@link CreateNewsDto} containing data for creating news.
-     * @param token a string containing the authentication token in the request header.
+     * @param createNewsDto object {@link CreateNewsDto} containing data for creating news.
+     * @param authorizationToken a string containing the authentication authorizationToken in the request header.
      * @return object {@link ResponseNews} with information about {@link News}.
      */
-    ResponseNews createNewsAdmin(CreateNewsDto dto, String token);
+    ResponseNews createNewsAdmin(CreateNewsDto createNewsDto, String authorizationToken);
 
     /**
      * Creates a new {@link News} for user with role 'JOURNALIST' created based on the specified {@link CreateNewsDto} object
      * and returns {@link ResponseNews} with information about the news.
      *
-     * @param dto   object {@link CreateNewsDto} containing data for creating news.
-     * @param token a string containing the authentication token in the request header.
+     * @param createNewsDto object {@link CreateNewsDto} containing data for creating news.
      * @return object {@link ResponseNews} with information about {@link News}.
      */
-    ResponseNews createNewsJournalist(CreateNewsDtoJournalist dto, String token);
+    ResponseNews createNewsJournalist(CreateNewsDtoJournalist createNewsDto);
 
     /**
      * Updates an existing {@link News} using data from {@link CreateNewsDto} for user with role 'ADMIN'.
      *
-     * @param id of news.
-     * @param dto object {@link CreateNewsDto} containing data for updating the news.
-     * @param token a string containing the authentication token in the request header.
+     * @param newsId of news.
+     * @param newsDto object {@link CreateNewsDto} containing data for updating the news.
+     * @param authorizationToken a string containing the authentication authorizationToken in the request header.
      * @return object {@link ResponseNews} with information about the updated {@link News}.
      */
-    ResponseNews updateAdmin(UUID id, CreateNewsDto dto, String token);
+    ResponseNews updateNewsAdmin(UUID newsId, CreateNewsDto newsDto, String authorizationToken);
 
     /**
      * Updates an existing {@link News} using data from {@link CreateNewsDtoJournalist} for user with role 'JOURNALIST'.
      *
-     * @param id  of news.
-     * @param dto object {@link CreateNewsDtoJournalist} containing data for updating the news.
-     * @param token a string containing the authentication token in the request header.
+     * @param newsId  of news.
+     * @param newsDto object {@link CreateNewsDtoJournalist} containing data for updating the news.
      * @return object {@link ResponseNews} with information about the updated {@link News}.
      */
-    ResponseNews updateJournalist(UUID id, CreateNewsDtoJournalist dto, String token);
+    ResponseNews updateNewsJournalist(UUID newsId, CreateNewsDtoJournalist newsDto);
 
     /**
-     * Deletes {@link News} by id.
+     * Deletes {@link News} by newsId.
      *
-     * @param id    of news.
-     * @param token a string containing the authentication token in the request header.
+     * @param newsId of news.
      */
-    void delete(UUID id, String token);
+    void deleteNews(UUID newsId);
 }

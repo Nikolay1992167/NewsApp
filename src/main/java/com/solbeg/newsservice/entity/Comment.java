@@ -1,8 +1,19 @@
 package com.solbeg.newsservice.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+
+import java.io.Serializable;
 
 @Data
 @SuperBuilder
@@ -11,7 +22,7 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(schema = "news", name = "comments")
-public class Comment extends BaseEntity {
+public class Comment extends BaseEntity implements Serializable {
 
     @Column(name = "text", nullable = false)
     private String text;

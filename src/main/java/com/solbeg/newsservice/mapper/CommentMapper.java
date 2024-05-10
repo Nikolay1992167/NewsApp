@@ -17,7 +17,7 @@ import org.mapstruct.ReportingPolicy;
 import java.util.List;
 import java.util.UUID;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface CommentMapper {
 
     /**
@@ -63,19 +63,8 @@ public interface CommentMapper {
      * @param responses list objects {@link ResponseComment}.
      * @return {@link ResponseNewsWithComments}.
      */
-    default ResponseNewsWithComments toNewsWithCommentsResponse(ResponseNews response, List<ResponseComment> responses) {
-        return ResponseNewsWithComments.builder()
-                .id(response.id())
-                .createdBy(response.createdBy())
-                .updatedBy(response.updatedBy())
-                .createdAt(response.createdAt())
-                .updatedAt(response.updatedAt())
-                .title(response.title())
-                .text(response.text())
-                .idAuthor(response.idAuthor())
-                .comments(responses)
-                .build();
-    }
+    @Mapping(target = "comments", source = "responses")
+    ResponseNewsWithComments toNewsWithCommentsResponse(ResponseNews response, List<ResponseComment> responses);
 
     /**
      * Creates a new {@link News} object with ID.

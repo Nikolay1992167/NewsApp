@@ -18,7 +18,7 @@ public record UserResponse(
         String lastName,
         String password,
         String email,
-        List<String> roles,
+        List<RoleResponse> roles,
         Status status
 ) {
 }

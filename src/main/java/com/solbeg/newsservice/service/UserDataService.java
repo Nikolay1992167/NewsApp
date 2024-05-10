@@ -8,12 +8,12 @@ import java.util.UUID;
 public interface UserDataService {
 
     /**
-     * This method finds and returns user with his data by his token.
+     * This method finds and returns user with his data by his authorizationToken.
      *
-     * @param token a string containing the authentication token in the request header.
+     * @param authorizationToken a string containing the authentication authorizationToken in the request header.
      * @return the {@link UserResponse} object containing the user's data.
      */
-    UserResponse getUserData(String token);
+    UserResponse getUserData(String authorizationToken);
 
     /**
      * This method finds and returns user with his data by his id.
@@ -21,5 +21,5 @@ public interface UserDataService {
      * @param userId id of user.
      * @return the {@link UserResponse} object containing the user's data.
      */
-    UserResponse getUserData(UUID userId, String token);
+    UserResponse getUserData(UUID userId, String authorizationToken);
 }

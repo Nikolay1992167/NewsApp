@@ -27,7 +27,7 @@ public interface CommentOpenApi {
             tags = "Comment",
             description = "Get comment by uuid",
             parameters = {
-                    @Parameter(name = "uuid", description = "Id of Comment", example = "5a0d7e7c-bbac-4165-a4bd-cc9ca0b05ef7")
+                    @Parameter(name = "commentId", description = "Id of Comment", example = "5a0d7e7c-bbac-4165-a4bd-cc9ca0b05ef7")
             },
             responses = {
                     @ApiResponse(
@@ -47,7 +47,7 @@ public interface CommentOpenApi {
                                                 "newsId": "389ec033-0631-4c0a-825b-e9ed165104d7"
                                             }
                                             """))),
-                    @ApiResponse(responseCode = "404", description = "The endpoint has not been completed when comment not found.",
+                    @ApiResponse(responseCode = "404", description = "Comment not found.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                     {
@@ -56,7 +56,7 @@ public interface CommentOpenApi {
                                         "error_status": 404
                                     }
                                     """))),
-                    @ApiResponse(responseCode = "400", description = "The endpoint has not been completed when an invalid uuid is entered.",
+                    @ApiResponse(responseCode = "400", description = "Id is invalid.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                     {
@@ -67,14 +67,14 @@ public interface CommentOpenApi {
                                     """)))
             }
     )
-    ResponseCommentNews getCommentById(UUID id);
+    ResponseCommentNews findCommentById(UUID commentId);
 
     @Operation(
             method = "GET",
             tags = "Comments by news id",
             description = "Get comment by news uuid",
             parameters = {
-                    @Parameter(name = "uuid", description = "Id of news", example = "6a268b16-85ea-491f-be9f-f2e28d1a4895")
+                    @Parameter(name = "newsId", description = "Id of news", example = "6a268b16-85ea-491f-be9f-f2e28d1a4895")
             },
             responses = {
                     @ApiResponse(
@@ -123,7 +123,7 @@ public interface CommentOpenApi {
                                                 ]
                                             }
                                             """))),
-                    @ApiResponse(responseCode = "404", description = "The endpoint has not been completed when news not found.",
+                    @ApiResponse(responseCode = "404", description = "News not found.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                     {
@@ -134,7 +134,7 @@ public interface CommentOpenApi {
                                     """)))
             }
     )
-    ResponseNewsWithComments getCommentsByNewsId(UUID newsId, Pageable pageable);
+    ResponseNewsWithComments findCommentsByNewsId(UUID newsId, Pageable pageable);
 
     @Operation(
             method = "GET",
@@ -394,7 +394,7 @@ public interface CommentOpenApi {
                                             """)))
             }
     )
-    Page<ResponseCommentNews> getAllCommentsByFilter(Filter filter, Pageable pageable);
+    Page<ResponseCommentNews> findCommentsByFilter(Filter filter, Pageable pageable);
 
     @Operation(
             method = "POST",
@@ -429,7 +429,7 @@ public interface CommentOpenApi {
                                                 "newsId": "389ec033-0631-4c0a-825b-e9ed165104d7"
                                             }
                                             """))),
-                    @ApiResponse(responseCode = "404", description = "The endpoint has not been completed because the news with newsId not found.",
+                    @ApiResponse(responseCode = "404", description = "News not found.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                             {
@@ -438,7 +438,7 @@ public interface CommentOpenApi {
                                                 "error_status": 404
                                             }
                                     """))),
-                    @ApiResponse(responseCode = "400", description = "The endpoint has not been completed because the text not correct.",
+                    @ApiResponse(responseCode = "400", description = "Request data is incorrect.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                             {
@@ -447,7 +447,7 @@ public interface CommentOpenApi {
                                                 "error_status": 400
                                             }
                                     """))),
-                    @ApiResponse(responseCode = "400", description = "The endpoint has not been completed because the newsId not correct.",
+                    @ApiResponse(responseCode = "400", description = "NewsId is incorrect.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                             {
@@ -456,7 +456,7 @@ public interface CommentOpenApi {
                                                 "error_status": 400
                                             }
                                     """))),
-                    @ApiResponse(responseCode = "403", description = "The endpoint has not been completed when entered token without access.",
+                    @ApiResponse(responseCode = "403", description = "Token without access.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                             {
@@ -467,14 +467,14 @@ public interface CommentOpenApi {
                                     """)))
             }
     )
-    ResponseCommentNews createComment(CreateCommentDto commentDto, String token);
+    ResponseCommentNews createComment(CreateCommentDto commentDto);
 
     @Operation(
             method = "PUT",
             tags = "Comment",
             description = "Update a comment by id",
             parameters = {
-                    @Parameter(name = "id", description = "id of comment", example = "9725df2c-b725-4572-98e5-aa60d430c757")
+                    @Parameter(name = "commentId", description = "Id of comment", example = "9725df2c-b725-4572-98e5-aa60d430c757")
             },
             requestBody = @RequestBody(
                     required = true,
@@ -504,7 +504,7 @@ public interface CommentOpenApi {
                                                 "newsId": "389ec033-0631-4c0a-825b-e9ed165104d7"
                                             }
                                             """))),
-                    @ApiResponse(responseCode = "404", description = "The endpoint has not been completed when a comment not found.",
+                    @ApiResponse(responseCode = "404", description = "Comment not found.",
                             content = @Content(mediaType = "application/json", examples = @ExampleObject("""
                                             {
                                                 "timestamp": "2024-04-18T16:08:19.3778544",
@@ -512,7 +512,7 @@ public interface CommentOpenApi {
                                                 "error_status": 404
                                             }
                                     """))),
-                    @ApiResponse(responseCode = "400", description = "The endpoint has not been completed when id entered incorrectly.",
+                    @ApiResponse(responseCode = "400", description = "Id is incorrectly.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                     {
@@ -521,7 +521,7 @@ public interface CommentOpenApi {
                                         "error_status": 400
                                     }
                                     """))),
-                    @ApiResponse(responseCode = "401", description = "Not Authenticated User when an token is not entered.",
+                    @ApiResponse(responseCode = "401", description = "Token is not entered.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                             {
@@ -530,7 +530,7 @@ public interface CommentOpenApi {
                                                 "error_status": 401
                                             }
                                     """))),
-                    @ApiResponse(responseCode = "403", description = "The endpoint has not been completed when entered token without access.",
+                    @ApiResponse(responseCode = "403", description = "Token without access.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                             {
@@ -541,18 +541,18 @@ public interface CommentOpenApi {
                                     """)))
             }
     )
-    ResponseCommentNews updateComment(UUID id, UpdateCommentDto updateCommentDto, String token);
+    ResponseCommentNews updateComment(UUID commentId, UpdateCommentDto updateCommentDto);
 
     @Operation(
             method = "DELETE",
             tags = "Comment",
-            description = "Delete a comment by id",
+            description = "Delete a comment by commentId",
             parameters = {
-                    @Parameter(name = "id", description = "id of comment", example = "9725df2c-b725-4572-98e5-aa60d430c757")
+                    @Parameter(name = "commentId", description = "commentId of comment", example = "9725df2c-b725-4572-98e5-aa60d430c757")
             },
             responses = {
                     @ApiResponse(
-                            responseCode = "200", description = "The endpoint has been completed."),
+                            responseCode = "200", description = "Comment deleted."),
                     @ApiResponse(responseCode = "404", description = "The endpoint has not been completed when a comment not found.",
                             content = @Content(mediaType = "application/json", examples = @ExampleObject("""
                                             {
@@ -561,7 +561,7 @@ public interface CommentOpenApi {
                                                 "error_status": 404
                                             }
                                     """))),
-                    @ApiResponse(responseCode = "400", description = "The endpoint has not been completed when id entered incorrectly",
+                    @ApiResponse(responseCode = "400", description = "Id is incorrectly",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                     {
@@ -570,7 +570,7 @@ public interface CommentOpenApi {
                                         "error_status": 400
                                     }
                                     """))),
-                    @ApiResponse(responseCode = "401", description = "Not Authenticated User when an  token is not entered.",
+                    @ApiResponse(responseCode = "401", description = "Token is not entered.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                             {
@@ -579,7 +579,7 @@ public interface CommentOpenApi {
                                                 "error_status": 401
                                             }
                                     """))),
-                    @ApiResponse(responseCode = "403", description = "The endpoint has not been completed when entered token without access.",
+                    @ApiResponse(responseCode = "403", description = "Token without access.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                             {
@@ -588,7 +588,7 @@ public interface CommentOpenApi {
                                                 "error_status": 403
                                             }
                                     """))),
-                    @ApiResponse(responseCode = "403", description = "The endpoint has not been completed when user can't delete comment other user.",
+                    @ApiResponse(responseCode = "403", description = "User can't delete comment other user.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                             {
@@ -599,5 +599,5 @@ public interface CommentOpenApi {
                                     """)))
             }
     )
-    void deleteCommentById(UUID id, String token);
+    void deleteCommentById(UUID commentId);
 }

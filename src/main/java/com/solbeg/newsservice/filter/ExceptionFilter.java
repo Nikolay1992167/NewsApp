@@ -12,8 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.reactive.function.client.WebClientRequestException;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -29,33 +29,21 @@ public class ExceptionFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         try {
             filterChain.doFilter(request, response);
-        } catch (WebClientRequestException exception) {
-            handleWebClientRequestException(response, exception);
+        } catch (RestClientException exception) {
+            handleException(response, exception, HttpStatus.SERVICE_UNAVAILABLE);
         } catch (RuntimeException exception) {
-            handleException(response, exception);
+            handleException(response, exception, HttpStatus.UNAUTHORIZED);
         }
     }
 
-    public void handleException(HttpServletResponse response, Exception exception) throws IOException {
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+    public void handleException(HttpServletResponse response, Exception exception, HttpStatus status) throws IOException {
+        response.setStatus(status.value());
         response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.toString());
         response.setCharacterEncoding("utf-8");
         IncorrectData incorrectData = new IncorrectData(
                 LocalDateTime.now(),
                 exception.getMessage(),
-                HttpStatus.UNAUTHORIZED.value());
-        String responseMessage = mapper.writeValueAsString(incorrectData);
-        response.getWriter().write(responseMessage);
-    }
-
-    private void handleWebClientRequestException(HttpServletResponse response, WebClientRequestException exception) throws IOException {
-        response.setStatus(HttpStatus.SERVICE_UNAVAILABLE.value());
-        response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.toString());
-        response.setCharacterEncoding("utf-8");
-        IncorrectData incorrectData = new IncorrectData(
-                LocalDateTime.now(),
-                exception.getMessage(),
-                HttpStatus.SERVICE_UNAVAILABLE.value());
+                status.value());
         String responseMessage = mapper.writeValueAsString(incorrectData);
         response.getWriter().write(responseMessage);
     }

@@ -4,6 +4,7 @@ import com.solbeg.newsservice.exception.AccessException;
 import com.solbeg.newsservice.exception.CreateObjectException;
 import com.solbeg.newsservice.exception.CustomServerException;
 import com.solbeg.newsservice.exception.NotFoundException;
+import com.solbeg.newsservice.exception.ParsingException;
 import com.solbeg.newsservice.exception.model.IncorrectData;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,11 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class NewsServiceExceptionHandler {
+
+    @ExceptionHandler(ParsingException.class)
+    public ResponseEntity<IncorrectData> parsingException(ParsingException exception) {
+        return getResponse(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(CustomServerException.class)
     public ResponseEntity<IncorrectData> customServerException(CustomServerException exception) {

@@ -1,0 +1,21 @@
+spring:
+  cache:
+    type: none
+  datasource:
+    username: test
+    password: test
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        default_schema: news
+    open-in-view: false
+  liquibase:
+    enabled: true
+    change-log: liquibase/db.changelog-master-test.yml
+    default-schema: news
+urls:
+  userservice_url: http://localhost:8081/

@@ -6,10 +6,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.*;
-import lombok.experimental.FieldNameConstants;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,7 +24,7 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(schema = "news", name = "news")
-public class News extends BaseEntity{
+public class News extends BaseEntity implements Serializable {
 
     @Column(name = "title", nullable = false)
     private String title;

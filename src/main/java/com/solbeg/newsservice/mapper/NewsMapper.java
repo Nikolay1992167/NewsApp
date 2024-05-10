@@ -8,7 +8,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface NewsMapper {
 
     /**
@@ -47,7 +47,7 @@ public interface NewsMapper {
     /**
      * Updates {@link News} based on information from {@link CreateNewsDtoJournalist}.
      *
-     * @param oldNews       updated {@link News}.
+     * @param oldNews                 updated {@link News}.
      * @param createNewsDtoJournalist object {@link CreateNewsDtoJournalist} with information about the object.
      * @return {@link News} updated news.
      */

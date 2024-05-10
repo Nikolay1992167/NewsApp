@@ -19,4 +19,5 @@ spring:
 server:
   port: ${SERVER_PORT:8090}
 urls:
+#  userservice_url: http://user-service:8081/
   userservice_url: http://localhost:8081/

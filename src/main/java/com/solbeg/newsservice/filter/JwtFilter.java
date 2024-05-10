@@ -38,7 +38,6 @@ public class JwtFilter extends OncePerRequestFilter {
         }
         UserResponse userData = userDataService.getUserData(header);
         UserDetails userDetails = userMapper.toUserDetails(userData);
-
         UsernamePasswordAuthenticationToken authenticated = UsernamePasswordAuthenticationToken.authenticated(
                 userDetails, null, userDetails.getAuthorities());
         authenticated.setDetails(

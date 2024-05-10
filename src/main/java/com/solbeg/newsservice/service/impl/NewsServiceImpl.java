@@ -14,8 +14,12 @@ import com.solbeg.newsservice.mapper.NewsMapper;
 import com.solbeg.newsservice.repository.NewsRepository;
 import com.solbeg.newsservice.service.NewsService;
 import com.solbeg.newsservice.service.UserDataService;
+import com.solbeg.newsservice.util.AuthUtil;
+import com.solbeg.newsservice.validation.NewsValidator;
 import lombok.RequiredArgsConstructor;
-import org.mapstruct.factory.Mappers;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -29,25 +33,31 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class NewsServiceImpl implements NewsService {
+    private final NewsValidator newsValidator;
+
+    private final NewsMapper newsMapper;
+
     private final NewsRepository newsRepository;
+
     private final UserDataService userDataService;
-    private final NewsMapper newsMapper = Mappers.getMapper(NewsMapper.class);
+
 
     @Override
-    public ResponseNews getById(UUID id) {
-        return newsRepository.findById(id)
+    @Cacheable(value = "ResponseNews", key = "#newsId")
+    public ResponseNews findNewsById(UUID newsId) {
+        return newsRepository.findById(newsId)
                 .map(newsMapper::toResponseNews)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.NEWS_NOT_FOUND.getMessage() + id));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.NEWS_NOT_FOUND.getMessage() + newsId));
     }
 
     @Override
-    public Page<ResponseNews> getAll(Pageable pageable) {
+    public Page<ResponseNews> getAllNews(Pageable pageable) {
         return newsRepository.findAll(pageable)
                 .map(newsMapper::toResponseNews);
     }
 
     @Override
-    public Page<ResponseNews> getAllByFilter(Filter filter, Pageable pageable) {
+    public Page<ResponseNews> findNewsByFilter(Filter filter, Pageable pageable) {
         return Optional.ofNullable(filter.part())
                 .map(part -> "%" + part + "%")
                 .map(part -> Specification.anyOf(
@@ -60,8 +70,9 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     @Transactional
-    public ResponseNews createNewsAdmin(CreateNewsDto createNewsDto, String token) {
-        UserResponse userInDB = userDataService.getUserData(createNewsDto.idAuthor(), token);
+    @CachePut(value = "ResponseNews", key = "#result.id()")
+    public ResponseNews createNewsAdmin(CreateNewsDto createNewsDto, String authorizationToken) {
+        UserResponse userInDB = userDataService.getUserData(createNewsDto.idAuthor(), authorizationToken);
         return Optional.of(createNewsDto)
                 .map(newsMapper::toNews)
                 .map(news -> {
@@ -74,9 +85,10 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     @Transactional
-    public ResponseNews createNewsJournalist(CreateNewsDtoJournalist createNewsDtoJournalist, String token) {
-        UUID userId = getId(token);
-        return Optional.of(createNewsDtoJournalist)
+    @CachePut(value = "ResponseNews", key = "#result.id()")
+    public ResponseNews createNewsJournalist(CreateNewsDtoJournalist createNewsDto) {
+        UUID userId = AuthUtil.getId();
+        return Optional.of(createNewsDto)
                 .map(newsMapper::toNews)
                 .map(news -> {
                     news.setCreatedBy(userId);
@@ -89,63 +101,44 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     @Transactional
-    public ResponseNews updateAdmin(UUID id, CreateNewsDto createNewsDto, String token) {
-        return newsRepository.findById(id)
+    @CachePut(value = "ResponseNews", key = "#result.id()")
+    public ResponseNews updateNewsAdmin(UUID newsId, CreateNewsDto newsDto, String authorizationToken) {
+        UserResponse userInDB = userDataService.getUserData(newsDto.idAuthor(), authorizationToken);
+        return newsRepository.findById(newsId)
                 .map(current -> {
-                    News updateNews = newsMapper.merge(current, createNewsDto);
-                    updateNews.setUpdatedBy(getId(token));
-                    return newsRepository.persistAndFlush(updateNews);
-                })
-                .map(newsMapper::toResponseNews)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.NEWS_NOT_FOUND.getMessage() + id));
-    }
-
-    @Override
-    @Transactional
-    public ResponseNews updateJournalist(UUID id, CreateNewsDtoJournalist createNewsDtoJournalist, String token) {
-        UserResponse userInDB = getAuthor(id, token);
-        return newsRepository.findById(id)
-                .map(current -> {
-                    News updateNews = newsMapper.merge(current, createNewsDtoJournalist);
+                    News updateNews = newsMapper.merge(current, newsDto);
                     updateNews.setUpdatedBy(userInDB.id());
-                    return newsRepository.persistAndFlush(updateNews);
+                    return newsRepository.updateAndFlush(updateNews);
                 })
                 .map(newsMapper::toResponseNews)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.NEWS_NOT_FOUND.getMessage() + id));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.NEWS_NOT_FOUND.getMessage() + newsId));
     }
 
     @Override
     @Transactional
-    public void delete(UUID id, String token) {
-        if (isAuthor(id, token)) {
+    @CachePut(value = "ResponseNews", key = "#result.id()")
+    public ResponseNews updateNewsJournalist(UUID newsId, CreateNewsDtoJournalist newsDto) {
+        UUID userId = AuthUtil.getId();
+        if (newsValidator.isAuthor(newsId, userId)) {
+            return newsRepository.findById(newsId)
+                    .map(current -> {
+                        News updateNews = newsMapper.merge(current, newsDto);
+                        updateNews.setUpdatedBy(userId);
+                        return newsRepository.updateAndFlush(updateNews);
+                    })
+                    .map(newsMapper::toResponseNews)
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.NEWS_NOT_FOUND.getMessage() + newsId));
+        }
+        return null;
+    }
+
+    @Override
+    @Transactional
+    @CacheEvict(value = "ResponseNews", key = "#newsId")
+    public void deleteNews(UUID newsId) {
+        if (!newsValidator.isOwnerRightChange(newsId)) {
             throw new AccessException(ErrorMessage.ERROR_CHANGE.getMessage());
         }
-        newsRepository.deleteById(id);
-    }
-
-    private UUID getId(String token) {
-        return userDataService.getUserData(token).id();
-    }
-
-    /**
-     * Checks whether the data belongs to the user and returns {@link UserResponse}.
-     *
-     * @param id    of news.
-     * @param token a string containing the authentication token in the request header.
-     * @return object {@link UserResponse} with information about user.
-     */
-    private UserResponse getAuthor(UUID id, String token) {
-        UserResponse userInDB = userDataService.getUserData(token);
-        ResponseNews news = getById(id);
-        if (!userInDB.id().equals(news.createdBy())) {
-            throw new AccessException(ErrorMessage.ERROR_CHANGE.getMessage());
-        }
-        return userInDB;
-    }
-
-    private Boolean isAuthor(UUID id, String token) {
-        UserResponse userInDB = userDataService.getUserData(token);
-        ResponseNews news = getById(id);
-        return userInDB.roles().contains("JOURNALIST") && !userInDB.id().equals(news.createdBy());
+        newsRepository.deleteById(newsId);
     }
 }

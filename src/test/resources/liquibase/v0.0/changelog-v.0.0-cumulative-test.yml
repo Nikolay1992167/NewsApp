@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - include:
+      file: liquibase/v0.0/ddl/2024-03-28--01-create-news-table.sql
+  - include:
+      file: liquibase/v0.0/ddl/2024-03-28--02-create-comments-table.sql
+  - include:
+      file: liquibase/v0.0/dml/2024-05-09--01-insert-news-table.sql
+  - include:
+      file: liquibase/v0.0/dml/2024-05-09--02-insert-comments-table.sql

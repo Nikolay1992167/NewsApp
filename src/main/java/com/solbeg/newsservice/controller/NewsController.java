@@ -25,21 +25,21 @@ public class NewsController implements NewsOpenApi {
     private final NewsService newsService;
 
     @Override
-    @GetMapping("/{id}")
-    public ResponseNews getNewsById(@Valid @PathVariable UUID id) {
-        return newsService.getById(id);
+    @GetMapping("/{newsId}")
+    public ResponseNews findNewsById(@Valid @PathVariable UUID newsId) {
+        return newsService.findNewsById(newsId);
     }
 
     @Override
     @GetMapping
     public Page<ResponseNews> getAllNews(@PageableDefault(20) Pageable pageable) {
-        return newsService.getAll(pageable);
+        return newsService.getAllNews(pageable);
     }
 
     @Override
     @GetMapping("/filter")
-    public Page<ResponseNews> getAllNewsByFilter(@Valid @RequestBody Filter filter, @PageableDefault(20) Pageable pageable) {
-        return newsService.getAllByFilter(filter, pageable);
+    public Page<ResponseNews> findNewsByFilter(@Valid @RequestBody Filter filter, @PageableDefault(20) Pageable pageable) {
+        return newsService.findNewsByFilter(filter, pageable);
     }
 
     @Override
@@ -55,34 +55,31 @@ public class NewsController implements NewsOpenApi {
     @PreAuthorize("hasAuthority('JOURNALIST')")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/journalist")
-    public ResponseNews createNewsJournalist(@Valid @RequestBody CreateNewsDtoJournalist createNewsDtoJournalist,
-                                             @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String token) {
-        return newsService.createNewsJournalist(createNewsDtoJournalist, token);
+    public ResponseNews createNewsJournalist(@Valid @RequestBody CreateNewsDtoJournalist createNewsDtoJournalist) {
+        return newsService.createNewsJournalist(createNewsDtoJournalist);
     }
 
     @Override
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping("/admin/{id}")
-    public ResponseNews updateNewsAdmin(@PathVariable UUID id,
+    @PutMapping("/admin/{newsId}")
+    public ResponseNews updateNewsAdmin(@PathVariable UUID newsId,
                                         @Valid @RequestBody CreateNewsDto createNewsDto,
                                         @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String token) {
-        return newsService.updateAdmin(id, createNewsDto, token);
+        return newsService.updateNewsAdmin(newsId, createNewsDto, token);
     }
 
     @Override
     @PreAuthorize("hasAuthority('JOURNALIST')")
-    @PutMapping("/journalist/{id}")
-    public ResponseNews updateNewsJournalist(@PathVariable UUID id,
-                                        @Valid @RequestBody CreateNewsDtoJournalist createNewsDtoJournalist,
-                                        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String token) {
-        return newsService.updateJournalist(id, createNewsDtoJournalist, token);
+    @PutMapping("/journalist/{newsId}")
+    public ResponseNews updateNewsJournalist(@PathVariable UUID newsId,
+                                        @Valid @RequestBody CreateNewsDtoJournalist createNewsDtoJournalist) {
+        return newsService.updateNewsJournalist(newsId, createNewsDtoJournalist);
     }
 
     @Override
     @PreAuthorize("hasAuthority('JOURNALIST') || hasAuthority('ADMIN')")
-    @DeleteMapping("/{id}")
-    public void deleteNewsById(@PathVariable UUID id,
-                               @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String token) {
-        newsService.delete(id, token);
+    @DeleteMapping("/{newsId}")
+    public void deleteNewsById(@PathVariable UUID newsId) {
+        newsService.deleteNews(newsId);
     }
 }

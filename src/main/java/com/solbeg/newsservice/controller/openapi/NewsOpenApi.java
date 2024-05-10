@@ -38,7 +38,7 @@ public interface NewsOpenApi {
                                     schema = @Schema(implementation = ResponseCommentNews.class),
                                     examples = @ExampleObject("""
                                             {
-                                                "id": "5a0d7e7c-bbac-4165-a4bd-cc9ca0b05ef7",
+                                                "newsId": "5a0d7e7c-bbac-4165-a4bd-cc9ca0b05ef7",
                                                 "createdBy": null,
                                                 "updatedBy": null,
                                                 "createdAt": "2024-04-18T14:15:05.326235",
@@ -48,7 +48,7 @@ public interface NewsOpenApi {
                                                 "newsId": "389ec033-0631-4c0a-825b-e9ed165104d7"
                                             }
                                             """))),
-                    @ApiResponse(responseCode = "400", description = "The endpoint has not been completed when an invalid uuid is entered.",
+                    @ApiResponse(responseCode = "400", description = "Id is incorrect.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                     {
@@ -57,7 +57,7 @@ public interface NewsOpenApi {
                                         "error_status": 400
                                     }
                                     """))),
-                    @ApiResponse(responseCode = "404", description = "The endpoint has not been completed when news not found.",
+                    @ApiResponse(responseCode = "404", description = "News not found.",
                     content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                             {
@@ -68,7 +68,7 @@ public interface NewsOpenApi {
                             """)))
             }
     )
-    ResponseNews getNewsById(UUID id);
+    ResponseNews findNewsById(UUID newsId);
 
     @Operation(
             method = "GET",
@@ -228,7 +228,7 @@ public interface NewsOpenApi {
                                             """)))
             }
     )
-    Page<ResponseNews> getAllNewsByFilter(Filter filter, Pageable pageable);
+    Page<ResponseNews> findNewsByFilter(Filter filter, Pageable pageable);
 
     @Operation(
             method = "POST",
@@ -249,7 +249,7 @@ public interface NewsOpenApi {
                     )
             ),
             responses = {
-                    @ApiResponse(responseCode = "201", description = "The endpoint has been completed.",
+                    @ApiResponse(responseCode = "201", description = "News created.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ResponseNews.class),
                                     examples = @ExampleObject("""
@@ -264,7 +264,7 @@ public interface NewsOpenApi {
                                                 "idAuthor": "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12"
                                             }
                                     """))),
-                    @ApiResponse(responseCode = "401", description = "Not Authenticated User when an token is not entered.",
+                    @ApiResponse(responseCode = "401", description = "Token is not entered.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                             {
@@ -273,7 +273,7 @@ public interface NewsOpenApi {
                                                 "error_status": 401
                                             }
                                     """))),
-                    @ApiResponse(responseCode = "404", description = "The endpoint has not been completed because the request arguments are not validated.",
+                    @ApiResponse(responseCode = "404", description = "Journalist not found.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                             {
@@ -282,7 +282,7 @@ public interface NewsOpenApi {
                                                 "error_status": 404
                                             }
                                     """))),
-                    @ApiResponse(responseCode = "400", description = "The endpoint has not been completed because the title not correct.",
+                    @ApiResponse(responseCode = "400", description = "Request data is incorrect.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                             {
@@ -291,7 +291,7 @@ public interface NewsOpenApi {
                                                 "error_status": 400
                                             }
                                     """))),
-                    @ApiResponse(responseCode = "403", description = "The endpoint has not been completed when entered token without access.",
+                    @ApiResponse(responseCode = "403", description = "Token without access.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                             {
@@ -322,7 +322,7 @@ public interface NewsOpenApi {
                     )
             ),
             responses = {
-                    @ApiResponse(responseCode = "201", description = "The endpoint has been completed.",
+                    @ApiResponse(responseCode = "201", description = "News created.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ResponseNews.class),
                                     examples = @ExampleObject("""
@@ -337,7 +337,7 @@ public interface NewsOpenApi {
                                           "idAuthor": "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12"
                                     }
                                             """))),
-                    @ApiResponse(responseCode = "401", description = "Not Authenticated User when an token is not entered.",
+                    @ApiResponse(responseCode = "401", description = "Token is not entered.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                             {
@@ -346,7 +346,7 @@ public interface NewsOpenApi {
                                                 "error_status": 401
                                             }
                                     """))),
-                    @ApiResponse(responseCode = "400", description = "The endpoint has not been completed because the title not correct.",
+                    @ApiResponse(responseCode = "400", description = "Request data is incorrect.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                             {
@@ -355,7 +355,7 @@ public interface NewsOpenApi {
                                                 "error_status": 400
                                             }
                                     """))),
-                    @ApiResponse(responseCode = "403", description = "The endpoint has not been completed when entered token without access.",
+                    @ApiResponse(responseCode = "403", description = "Token without access.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                             {
@@ -366,14 +366,14 @@ public interface NewsOpenApi {
                                     """)))
             }
     )
-    ResponseNews createNewsJournalist(CreateNewsDtoJournalist createNewsDtoJournalist, String token);
+    ResponseNews createNewsJournalist(CreateNewsDtoJournalist createNewsDtoJournalist);
 
     @Operation(
             method = "PUT",
             tags = "News",
-            description = "Update a news by id for user with role 'ADMIN'",
+            description = "Update a news by newsId for user with role 'ADMIN'",
             parameters = {
-                    @Parameter(name = "id", description = "id of news", example = "4389c2d6-8c16-4234-a8ea-e5317d3a91f5")
+                    @Parameter(name = "id", description = "newsId of news", example = "4389c2d6-8c16-4234-a8ea-e5317d3a91f5")
             },
             requestBody = @RequestBody(
                     required = true,
@@ -395,7 +395,7 @@ public interface NewsOpenApi {
                                     schema = @Schema(implementation = ResponseNews.class),
                                     examples = @ExampleObject("""
                                             {
-                                                "id": "4389c2d6-8c16-4234-a8ea-e5317d3a91f5",
+                                                "newsId": "4389c2d6-8c16-4234-a8ea-e5317d3a91f5",
                                                 "createdBy": "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12",
                                                 "updatedBy": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
                                                 "createdAt": "2024-04-20T22:42:44.757449",
@@ -405,7 +405,7 @@ public interface NewsOpenApi {
                                                 "idAuthor": "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12"
                                             }
                                             """))),
-                    @ApiResponse(responseCode = "404", description = "The endpoint has not been completed when a news not found.",
+                    @ApiResponse(responseCode = "404", description = "News not found.",
                             content = @Content(mediaType = "application/json", examples = @ExampleObject("""
                                             {
                                                 "timestamp": "2024-04-18T16:08:19.3778544",
@@ -413,7 +413,7 @@ public interface NewsOpenApi {
                                                 "error_status": 404
                                             }
                                     """))),
-                    @ApiResponse(responseCode = "400", description = "The endpoint has not been completed when id entered incorrectly",
+                    @ApiResponse(responseCode = "400", description = "Id is incorrect.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                     {
@@ -422,7 +422,7 @@ public interface NewsOpenApi {
                                         "error_status": 400
                                     }
                                     """))),
-                    @ApiResponse(responseCode = "401", description = "Not Authenticated User when an  token is not entered.",
+                    @ApiResponse(responseCode = "401", description = "Token is not entered.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                             {
@@ -431,7 +431,7 @@ public interface NewsOpenApi {
                                                 "error_status": 401
                                             }
                                     """))),
-                    @ApiResponse(responseCode = "403", description = "The endpoint has not been completed when entered token without access.",
+                    @ApiResponse(responseCode = "403", description = "Token without access.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                             {
@@ -442,14 +442,14 @@ public interface NewsOpenApi {
                                     """)))
             }
     )
-    ResponseNews updateNewsAdmin(UUID id, CreateNewsDto createNewsDto, String token);
+    ResponseNews updateNewsAdmin(UUID newsId, CreateNewsDto createNewsDto, String token);
 
     @Operation(
             method = "PUT",
             tags = "News",
-            description = "Update a news by id for user with role 'JOURNALIST'",
+            description = "Update a news by newsId for user with role 'JOURNALIST'",
             parameters = {
-                    @Parameter(name = "id", description = "id of news", example = "4389c2d6-8c16-4234-a8ea-e5317d3a91f5")
+                    @Parameter(name = "id", description = "newsId of news", example = "4389c2d6-8c16-4234-a8ea-e5317d3a91f5")
             },
             requestBody = @RequestBody(
                     required = true,
@@ -470,7 +470,7 @@ public interface NewsOpenApi {
                                     schema = @Schema(implementation = ResponseNews.class),
                                     examples = @ExampleObject("""
                                             {
-                                                "id": "376a7953-4b48-453b-9e05-06aab3d897e2",
+                                                "newsId": "376a7953-4b48-453b-9e05-06aab3d897e2",
                                                 "createdBy": "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12",
                                                 "updatedBy": "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12",
                                                 "createdAt": "2024-04-24T08:22:50.303188",
@@ -480,7 +480,7 @@ public interface NewsOpenApi {
                                                 "idAuthor": "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12"
                                             }
                                             """))),
-                    @ApiResponse(responseCode = "404", description = "The endpoint has not been completed when a news not found.",
+                    @ApiResponse(responseCode = "404", description = "News not found.",
                             content = @Content(mediaType = "application/json", examples = @ExampleObject("""
                                             {
                                                 "timestamp": "2024-04-24T08:38:13.4409905",
@@ -488,7 +488,7 @@ public interface NewsOpenApi {
                                                 "error_status": 404
                                             }
                                     """))),
-                    @ApiResponse(responseCode = "400", description = "The endpoint has not been completed when id entered incorrectly",
+                    @ApiResponse(responseCode = "400", description = "Id is incorrect.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                     {
@@ -497,7 +497,7 @@ public interface NewsOpenApi {
                                         "error_status": 400
                                     }
                                     """))),
-                    @ApiResponse(responseCode = "401", description = "Not Authenticated User when an  token is not entered.",
+                    @ApiResponse(responseCode = "401", description = "Token is not entered.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                             {
@@ -506,7 +506,7 @@ public interface NewsOpenApi {
                                                 "error_status": 401
                                             }
                                     """))),
-                    @ApiResponse(responseCode = "403", description = "The endpoint has not been completed when entered token without access.",
+                    @ApiResponse(responseCode = "403", description = "Token without access.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                             {
@@ -517,27 +517,27 @@ public interface NewsOpenApi {
                                     """)))
             }
     )
-    ResponseNews updateNewsJournalist(UUID id, CreateNewsDtoJournalist createNewsDto, String token);
+    ResponseNews updateNewsJournalist(UUID newsId, CreateNewsDtoJournalist createNewsDto);
 
     @Operation(
             method = "DELETE",
             tags = "News",
-            description = "Delete a news by id",
+            description = "Delete a news by newsId",
             parameters = {
-                    @Parameter(name = "id", description = "id of news", example = "9725df2c-b725-4572-98e5-aa60d430c757")
+                    @Parameter(name = "id", description = "newsId of news", example = "9725df2c-b725-4572-98e5-aa60d430c757")
             },
             responses = {
                     @ApiResponse(
-                            responseCode = "200", description = "The endpoint has been completed."),
-                    @ApiResponse(responseCode = "400", description = "The endpoint has not been completed when a news not found.",
+                            responseCode = "200", description = "News deleted."),
+                    @ApiResponse(responseCode = "404", description = "News not found.",
                             content = @Content(mediaType = "application/json", examples = @ExampleObject("""
                                             {
                                                 "timestamp": "2024-04-21T18:18:11.8869399",
                                                 "error_message": "News not found with d215d55e-fe9b-4946-b55f-6b428cf7a688",
-                                                "error_status": 400
+                                                "error_status": 404
                                             }
                                     """))),
-                    @ApiResponse(responseCode = "400", description = "The endpoint has not been completed when id entered incorrectly",
+                    @ApiResponse(responseCode = "400", description = "Id is incorrect.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                     {
@@ -546,7 +546,7 @@ public interface NewsOpenApi {
                                         "error_status": 400
                                     }
                                     """))),
-                    @ApiResponse(responseCode = "401", description = "Not Authenticated User when an  token is not entered.",
+                    @ApiResponse(responseCode = "401", description = "Token is not entered.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                             {
@@ -555,7 +555,7 @@ public interface NewsOpenApi {
                                                 "error_status": 401
                                             }
                                     """))),
-                    @ApiResponse(responseCode = "403", description = "The endpoint has not been completed when entered token without access.",
+                    @ApiResponse(responseCode = "403", description = "Token without access.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                             {
@@ -564,7 +564,7 @@ public interface NewsOpenApi {
                                                 "error_status": 403
                                             }
                                     """))),
-                    @ApiResponse(responseCode = "403", description = "The endpoint has not been completed when user can't delete comment other user.",
+                    @ApiResponse(responseCode = "403", description = "User can't delete comment other user.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                             {
@@ -575,5 +575,5 @@ public interface NewsOpenApi {
                                     """)))
             }
     )
-    void deleteNewsById(UUID id, String token);
+    void deleteNewsById(UUID newsId);
 }
