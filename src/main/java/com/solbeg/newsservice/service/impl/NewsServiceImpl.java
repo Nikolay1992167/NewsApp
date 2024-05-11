@@ -4,7 +4,6 @@ import com.solbeg.newsservice.dto.request.CreateNewsDto;
 import com.solbeg.newsservice.dto.request.CreateNewsDtoJournalist;
 import com.solbeg.newsservice.dto.request.Filter;
 import com.solbeg.newsservice.dto.response.ResponseNews;
-import com.solbeg.newsservice.dto.response.UserResponse;
 import com.solbeg.newsservice.enams.ErrorMessage;
 import com.solbeg.newsservice.entity.News;
 import com.solbeg.newsservice.exception.AccessException;
@@ -72,11 +71,11 @@ public class NewsServiceImpl implements NewsService {
     @Transactional
     @CachePut(value = "ResponseNews", key = "#result.id()")
     public ResponseNews createNewsAdmin(CreateNewsDto createNewsDto, String authorizationToken) {
-        UserResponse userInDB = userDataService.getUserData(createNewsDto.idAuthor(), authorizationToken);
+        userDataService.getUserData(createNewsDto.idAuthor(), authorizationToken);
         return Optional.of(createNewsDto)
                 .map(newsMapper::toNews)
                 .map(news -> {
-                    news.setCreatedBy(userInDB.id());
+                    news.setCreatedBy(AuthUtil.getId());
                     return newsRepository.persistAndFlush(news);
                 })
                 .map(newsMapper::toResponseNews)
@@ -103,11 +102,11 @@ public class NewsServiceImpl implements NewsService {
     @Transactional
     @CachePut(value = "ResponseNews", key = "#result.id()")
     public ResponseNews updateNewsAdmin(UUID newsId, CreateNewsDto newsDto, String authorizationToken) {
-        UserResponse userInDB = userDataService.getUserData(newsDto.idAuthor(), authorizationToken);
+        userDataService.getUserData(newsDto.idAuthor(), authorizationToken);
         return newsRepository.findById(newsId)
                 .map(current -> {
                     News updateNews = newsMapper.merge(current, newsDto);
-                    updateNews.setUpdatedBy(userInDB.id());
+                    updateNews.setUpdatedBy(AuthUtil.getId());
                     return newsRepository.updateAndFlush(updateNews);
                 })
                 .map(newsMapper::toResponseNews)
