@@ -3,6 +3,14 @@ spring:
     active: dev
   application:
     name: news-service
+  cache:
+    type: redis
+    cache-names: redis-cache
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: 6379
+      password: ${REDIS_PASSWORD:cGFzc3dvcnRvcmVkaXM=}
   liquibase:
     enabled: true
     change-log: liquibase/db.changelog-master.yml
@@ -19,5 +27,4 @@ spring:
 server:
   port: ${SERVER_PORT:8090}
 urls:
-#  userservice_url: http://user-service:8081/
-  userservice_url: http://localhost:8081/
+  userservice_url: http://user-service:8081/
