@@ -25,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.List;
@@ -113,7 +114,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
             MockHttpServletResponse response = mvcResult.getResponse();
             JSONObject jsonObject = new JSONObject(response.getContentAsString());
             assertThat(jsonObject.get("totalPages")).isEqualTo(1);
-            assertThat(jsonObject.get("totalElements")).isEqualTo(3);
+            assertThat(jsonObject.get("totalElements")).isEqualTo(5);
             assertThat(jsonObject.get("number")).isEqualTo(0);
         }
     }
@@ -136,7 +137,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
             MockHttpServletResponse response = mvcResult.getResponse();
             JSONObject jsonObject = new JSONObject(response.getContentAsString());
             assertThat(jsonObject.get("totalPages")).isEqualTo(1);
-            assertThat(jsonObject.get("totalElements")).isEqualTo(2);
+            assertThat(jsonObject.get("totalElements")).isEqualTo(1);
             assertThat(jsonObject.get("number")).isEqualTo(0);
         }
     }
@@ -420,6 +421,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
     }
 
     @Nested
+    @Transactional
     class UpdateNewsJournalistPutEndpointTest {
 
         @Test
@@ -532,6 +534,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
     }
 
     @Nested
+    @Transactional
     class DeleteNewsByIdDeleteEndPointTest {
 
         @Test

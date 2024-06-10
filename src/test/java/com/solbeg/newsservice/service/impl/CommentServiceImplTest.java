@@ -21,13 +21,16 @@ import com.solbeg.newsservice.util.testdata.NewsTestData;
 import com.solbeg.newsservice.validation.CommentValidator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 import static com.solbeg.newsservice.util.init.InitData.DEFAULT_PAGE_REQUEST_FOR_IT;
 import static com.solbeg.newsservice.util.init.InitData.ID_COMMENT;
@@ -45,12 +49,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class CommentServiceImplTest {
 
     @InjectMocks
@@ -131,7 +137,6 @@ class CommentServiceImplTest {
             // then
             assertEquals(expectedResponse, actualResponse);
         }
-
     }
 
     @Nested
@@ -174,33 +179,51 @@ class CommentServiceImplTest {
         @Test
         void shouldReturnPageOfResponseCommentNews() {
             // given
+            Pageable pageable = Pageable.unpaged();
             Filter filter = FilterTestData.getFilter();
-            int expectedSize = 1;
-            List<Comment> commentList = List.of(CommentTestData.getComment());
-            Page<Comment> page = new PageImpl<>(commentList);
-            when(commentRepository.findAll(any(PageRequest.class)))
-                    .thenReturn(page);
+            List<Comment> comments = List.of(CommentTestData.getComment());
+            PageImpl<Comment> commentPage = new PageImpl<>(comments, pageable, 1);
+            List<ResponseCommentNews> expectedComments = List.of(CommentTestData.getResponseCommentNews());
+
+            doReturn(commentPage)
+                    .when(commentRepository).findAll(any(Specification.class), eq(pageable));
+            IntStream.range(0, comments.size())
+                    .forEach(i -> doReturn(expectedComments.get(i))
+                            .when(commentMapper).toResponseWithNewsId(comments.get(i)));
 
             // when
-            Page<ResponseCommentNews> actual = commentService.findCommentsByFilter(filter, DEFAULT_PAGE_REQUEST_FOR_IT);
+            List<ResponseCommentNews> actualComments =
+                    commentService
+                            .findCommentsByFilter(filter, pageable)
+                            .getContent();
 
             // then
-            assertThat(actual.getTotalElements()).isEqualTo(expectedSize);
+            assertThat(actualComments).isEqualTo(expectedComments);
         }
 
         @Test
-        void shouldCheckEmpty() {
+        void checkEmpty() {
             // given
-            Filter filter = FilterTestData.getFilter();
-            Page<Comment> page = new PageImpl<>(List.of());
-            when(commentRepository.findAll(any(PageRequest.class)))
-                    .thenReturn(page);
+            Pageable pageable = Pageable.unpaged();
+            Filter emptyFilter = new Filter(null);
+            List<Comment> comments = List.of(CommentTestData.getComment());
+            PageImpl<Comment> commentPage = new PageImpl<>(comments, pageable, 2);
+            List<ResponseCommentNews> expectedComments = List.of(CommentTestData.getResponseCommentNews());
+
+            doReturn(commentPage)
+                    .when(commentRepository).findAll(pageable);
+            IntStream.range(0, comments.size())
+                    .forEach(i -> doReturn(expectedComments.get(i))
+                            .when(commentMapper).toResponseWithNewsId(comments.get(i)));
 
             // when
-            Page<ResponseCommentNews> actual = commentService.findCommentsByFilter(filter, DEFAULT_PAGE_REQUEST_FOR_IT);
+            List<ResponseCommentNews> actualComments =
+                    commentService
+                            .findCommentsByFilter(emptyFilter, pageable)
+                            .getContent();
 
             // then
-            assertThat(actual).isEmpty();
+            assertThat(actualComments).isEqualTo(expectedComments);
         }
     }
 
