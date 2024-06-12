@@ -12,11 +12,15 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.envers.AuditTable;
+import org.hibernate.envers.Audited;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
+@Audited
+@AuditTable(value = "news_aud", schema = "news")
 @Data
 @SuperBuilder
 @NoArgsConstructor

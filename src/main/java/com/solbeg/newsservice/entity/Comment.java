@@ -12,9 +12,14 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.envers.AuditTable;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 import java.io.Serializable;
 
+@Audited
+@AuditTable(value = "comments_aud", schema = "news")
 @Data
 @SuperBuilder
 @NoArgsConstructor
@@ -30,6 +35,7 @@ public class Comment extends BaseEntity implements Serializable {
     @Column(name = "username", nullable = false, length = 40)
     private String username;
 
+    @NotAudited
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
