@@ -6,28 +6,22 @@ import com.solbeg.newsservice.dto.request.CreateNewsDtoJournalist;
 import com.solbeg.newsservice.dto.request.Filter;
 import com.solbeg.newsservice.enams.ErrorMessage;
 import com.solbeg.newsservice.util.JwtTokenTestUtils;
+import com.solbeg.newsservice.util.ManagerMockWebServer;
 import com.solbeg.newsservice.util.PostgresSqlContainerInitializer;
 import com.solbeg.newsservice.util.testdata.NewsTestData;
 import com.solbeg.newsservice.util.testdata.UserTestData;
 import lombok.RequiredArgsConstructor;
-import okhttp3.mockwebserver.Dispatcher;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-import okhttp3.mockwebserver.RecordedRequest;
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -59,8 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class NewsControllerTest extends PostgresSqlContainerInitializer {
     private final MockMvc mockMvc;
     private final ObjectMapper objectMapper;
-
-    private MockWebServer mockWebServer;
+    private final ManagerMockWebServer managerMockWebServer;
 
     private String tokenAdmin;
     private String tokenJournalist;
@@ -152,7 +145,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
             String json = objectMapper.writeValueAsString(createNewsDto);
             String userResponseJson = objectMapper.writeValueAsString(UserTestData.getUserResponseAdmin());
 
-            startMockWebServer(userResponseJson);
+            managerMockWebServer.startMockWebServer(userResponseJson);
 
             // when, then
             mockMvc.perform(post(URL_NEWS + "/admin")
@@ -162,7 +155,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
                     .andExpectAll(
                             status().isCreated());
 
-            stopMockWebServer();
+            managerMockWebServer.stopMockWebServer();
         }
 
         @Test
@@ -172,7 +165,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
             String json = objectMapper.writeValueAsString(createNewsDto);
             String userResponseJson = objectMapper.writeValueAsString(UserTestData.getUserResponseAdmin());
 
-            startMockWebServer(userResponseJson);
+            managerMockWebServer.startMockWebServer(userResponseJson);
 
             // when, then
             mockMvc.perform(post(URL_NEWS + "/admin")
@@ -181,7 +174,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
                     .andExpectAll(
                             status().isUnauthorized());
 
-            stopMockWebServer();
+            managerMockWebServer.stopMockWebServer();
         }
 
         @Test
@@ -191,7 +184,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
             String json = objectMapper.writeValueAsString(createNewsDto);
             String userResponseJson = objectMapper.writeValueAsString(UserTestData.getUserResponseSubscriber());
 
-            startMockWebServer(userResponseJson);
+            managerMockWebServer.startMockWebServer(userResponseJson);
 
             // when, then
             mockMvc.perform(post(URL_NEWS + "/admin")
@@ -201,7 +194,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
                     .andExpectAll(
                             status().isForbidden());
 
-            stopMockWebServer();
+            managerMockWebServer.stopMockWebServer();
         }
 
         @Test
@@ -211,7 +204,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
             String json = objectMapper.writeValueAsString(createNewsDto);
             String userResponseJson = objectMapper.writeValueAsString(UserTestData.getUserResponseAdmin());
 
-            startMockWebServer(userResponseJson);
+            managerMockWebServer.startMockWebServer(userResponseJson);
 
             // when, then
             mockMvc.perform(post(URL_NEWS + "/admin")
@@ -221,7 +214,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
                     .andExpectAll(
                             status().isBadRequest());
 
-            stopMockWebServer();
+            managerMockWebServer.stopMockWebServer();
         }
     }
 
@@ -235,7 +228,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
             String json = objectMapper.writeValueAsString(createNewsDto);
             String userResponseJson = objectMapper.writeValueAsString(UserTestData.getUserResponseJournalist());
 
-            startMockWebServer(userResponseJson);
+            managerMockWebServer.startMockWebServer(userResponseJson);
 
             // when, then
             mockMvc.perform(post(URL_NEWS + "/journalist")
@@ -245,7 +238,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
                     .andExpectAll(
                             status().isCreated());
 
-            stopMockWebServer();
+            managerMockWebServer.stopMockWebServer();
         }
 
         @Test
@@ -255,7 +248,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
             String json = objectMapper.writeValueAsString(createNewsDto);
             String userResponseJson = objectMapper.writeValueAsString(UserTestData.getUserResponseJournalist());
 
-            startMockWebServer(userResponseJson);
+            managerMockWebServer.startMockWebServer(userResponseJson);
 
             // when, then
             mockMvc.perform(post(URL_NEWS + "/journalist")
@@ -264,7 +257,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
                     .andExpectAll(
                             status().isUnauthorized());
 
-            stopMockWebServer();
+            managerMockWebServer.stopMockWebServer();
         }
 
         @Test
@@ -274,7 +267,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
             String json = objectMapper.writeValueAsString(createNewsDto);
             String userResponseJson = objectMapper.writeValueAsString(UserTestData.getUserResponseSubscriber());
 
-            startMockWebServer(userResponseJson);
+            managerMockWebServer.startMockWebServer(userResponseJson);
 
             // when, then
             mockMvc.perform(post(URL_NEWS + "/journalist")
@@ -284,7 +277,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
                     .andExpectAll(
                             status().isForbidden());
 
-            stopMockWebServer();
+            managerMockWebServer.stopMockWebServer();
         }
 
         @Test
@@ -294,7 +287,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
             String json = objectMapper.writeValueAsString(createNewsDto);
             String userResponseJson = objectMapper.writeValueAsString(UserTestData.getUserResponseJournalist());
 
-            startMockWebServer(userResponseJson);
+            managerMockWebServer.startMockWebServer(userResponseJson);
 
             // when, then
             mockMvc.perform(post(URL_NEWS + "/journalist")
@@ -304,7 +297,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
                     .andExpectAll(
                             status().isBadRequest());
 
-            stopMockWebServer();
+            managerMockWebServer.stopMockWebServer();
         }
     }
 
@@ -319,7 +312,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
             String json = objectMapper.writeValueAsString(updateNewsDto);
             String userResponseJson = objectMapper.writeValueAsString(UserTestData.getUserResponseAdmin());
 
-            startMockWebServer(userResponseJson);
+            managerMockWebServer.startMockWebServer(userResponseJson);
 
             // when, then
             mockMvc.perform(put(URL_NEWS + "/admin/" + newsId)
@@ -331,7 +324,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
                             jsonPath("$.id").value(newsId.toString()),
                             jsonPath("$.text").value(updateNewsDto.text()));
 
-            stopMockWebServer();
+            managerMockWebServer.stopMockWebServer();
         }
 
         @Test
@@ -342,7 +335,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
             String json = objectMapper.writeValueAsString(updateNewsDto);
             String userResponseJson = objectMapper.writeValueAsString(UserTestData.getUserResponseAdmin());
 
-            startMockWebServer(userResponseJson);
+            managerMockWebServer.startMockWebServer(userResponseJson);
 
             // when, then
             mockMvc.perform(put(URL_NEWS + "/admin/" + newsId)
@@ -351,7 +344,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
                     .andExpectAll(
                             status().isUnauthorized());
 
-            stopMockWebServer();
+            managerMockWebServer.stopMockWebServer();
         }
 
         @Test
@@ -362,7 +355,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
             String json = objectMapper.writeValueAsString(updateNewsDto);
             String userResponseJson = objectMapper.writeValueAsString(UserTestData.getUserResponseSubscriber());
 
-            startMockWebServer(userResponseJson);
+            managerMockWebServer.startMockWebServer(userResponseJson);
 
             // when, then
             mockMvc.perform(put(URL_NEWS + "/admin/" + newsId)
@@ -372,7 +365,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
                     .andExpectAll(
                             status().isForbidden());
 
-            stopMockWebServer();
+            managerMockWebServer.stopMockWebServer();
         }
 
         @Test
@@ -383,7 +376,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
             String json = objectMapper.writeValueAsString(updateNewsDto);
             String userResponseJson = objectMapper.writeValueAsString(UserTestData.getUserResponseAdmin());
 
-            startMockWebServer(userResponseJson);
+            managerMockWebServer.startMockWebServer(userResponseJson);
 
             // when, then
             mockMvc.perform(put(URL_NEWS + "/admin/" + newsId)
@@ -395,7 +388,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
                             jsonPath("$.error_message")
                                     .value(ErrorMessage.NEWS_NOT_FOUND.getMessage() + newsId));
 
-            stopMockWebServer();
+            managerMockWebServer.stopMockWebServer();
         }
 
         @Test
@@ -406,7 +399,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
             String json = objectMapper.writeValueAsString(updateNewsDto);
             String userResponseJson = objectMapper.writeValueAsString(UserTestData.getUserResponseAdmin());
 
-            startMockWebServer(userResponseJson);
+            managerMockWebServer.startMockWebServer(userResponseJson);
 
             // when, then
             mockMvc.perform(put(URL_NEWS + "/admin/" + newsId)
@@ -416,7 +409,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
                     .andExpectAll(
                             status().isBadRequest());
 
-            stopMockWebServer();
+            managerMockWebServer.stopMockWebServer();
         }
     }
 
@@ -432,7 +425,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
             String json = objectMapper.writeValueAsString(updateNewsDto);
             String userResponseJson = objectMapper.writeValueAsString(UserTestData.getUserResponseJournalist());
 
-            startMockWebServer(userResponseJson);
+            managerMockWebServer.startMockWebServer(userResponseJson);
 
             // when, then
             mockMvc.perform(put(URL_NEWS + "/journalist/" + newsId)
@@ -444,7 +437,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
                             jsonPath("$.id").value(newsId.toString()),
                             jsonPath("$.text").value(updateNewsDto.text()));
 
-            stopMockWebServer();
+            managerMockWebServer.stopMockWebServer();
         }
 
         @Test
@@ -455,7 +448,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
             String json = objectMapper.writeValueAsString(updateNewsDto);
             String userResponseJson = objectMapper.writeValueAsString(UserTestData.getUserResponseJournalist());
 
-            startMockWebServer(userResponseJson);
+            managerMockWebServer.startMockWebServer(userResponseJson);
 
             // when, then
             mockMvc.perform(put(URL_NEWS + "/journalist/" + newsId)
@@ -464,7 +457,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
                     .andExpectAll(
                             status().isUnauthorized());
 
-            stopMockWebServer();
+            managerMockWebServer.stopMockWebServer();
         }
 
         @Test
@@ -475,7 +468,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
             String json = objectMapper.writeValueAsString(updateNewsDto);
             String userResponseJson = objectMapper.writeValueAsString(UserTestData.getUserResponseSubscriber());
 
-            startMockWebServer(userResponseJson);
+            managerMockWebServer.startMockWebServer(userResponseJson);
 
             // when, then
             mockMvc.perform(put(URL_NEWS + "/journalist/" + newsId)
@@ -485,7 +478,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
                     .andExpectAll(
                             status().isForbidden());
 
-            stopMockWebServer();
+            managerMockWebServer.stopMockWebServer();
         }
 
         @Test
@@ -496,7 +489,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
             String json = objectMapper.writeValueAsString(updateNewsDto);
             String userResponseJson = objectMapper.writeValueAsString(UserTestData.getUserResponseJournalist());
 
-            startMockWebServer(userResponseJson);
+            managerMockWebServer.startMockWebServer(userResponseJson);
 
             // when, then
             mockMvc.perform(put(URL_NEWS + "/journalist/" + newsId)
@@ -508,7 +501,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
                             jsonPath("$.error_message")
                                     .value(ErrorMessage.NEWS_NOT_FOUND.getMessage() + newsId));
 
-            stopMockWebServer();
+            managerMockWebServer.stopMockWebServer();
         }
 
         @Test
@@ -519,7 +512,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
             String json = objectMapper.writeValueAsString(updateNewsDto);
             String userResponseJson = objectMapper.writeValueAsString(UserTestData.getUserResponseJournalist());
 
-            startMockWebServer(userResponseJson);
+            managerMockWebServer.startMockWebServer(userResponseJson);
 
             // when, then
             mockMvc.perform(put(URL_NEWS + "/journalist/" + newsId)
@@ -529,7 +522,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
                     .andExpectAll(
                             status().isBadRequest());
 
-            stopMockWebServer();
+            managerMockWebServer.stopMockWebServer();
         }
     }
 
@@ -543,7 +536,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
             UUID newsId = ID_NEWS_FOR_IT_DELETE;
             String userResponseJson = objectMapper.writeValueAsString(UserTestData.getUserResponseAdmin());
 
-            startMockWebServer(userResponseJson);
+            managerMockWebServer.startMockWebServer(userResponseJson);
 
             // when, then
             mockMvc.perform(delete(URL_NEWS + "/" + newsId)
@@ -552,7 +545,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
                     .andExpectAll(
                             status().isOk());
 
-            stopMockWebServer();
+            managerMockWebServer.stopMockWebServer();
         }
 
         @Test
@@ -561,7 +554,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
             UUID newsId = ID_NEWS_FOR_IT_DELETE;
             String userResponseJson = objectMapper.writeValueAsString(UserTestData.getUserResponseAdmin());
 
-            startMockWebServer(userResponseJson);
+            managerMockWebServer.startMockWebServer(userResponseJson);
 
             // when, then
             mockMvc.perform(delete(URL_NEWS + "/" + newsId)
@@ -569,7 +562,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
                     .andExpectAll(
                             status().isUnauthorized());
 
-            stopMockWebServer();
+            managerMockWebServer.stopMockWebServer();
         }
 
         @Test
@@ -578,7 +571,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
             UUID newsId = ID_NEWS_FOR_IT;
             String userResponseJson = objectMapper.writeValueAsString(UserTestData.getUserResponseJournalist());
 
-            startMockWebServer(userResponseJson);
+            managerMockWebServer.startMockWebServer(userResponseJson);
 
             // when, then
             mockMvc.perform(delete(URL_NEWS + "/" + newsId)
@@ -587,7 +580,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
                     .andExpectAll(
                             status().isForbidden());
 
-            stopMockWebServer();
+            managerMockWebServer.stopMockWebServer();
         }
 
         @Test
@@ -596,7 +589,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
             UUID newsId = ID_NEWS_FOR_IT_DELETE;
             String userResponseJson = objectMapper.writeValueAsString(UserTestData.getUserResponseJournalist());
 
-            startMockWebServer(userResponseJson);
+            managerMockWebServer.startMockWebServer(userResponseJson);
 
             // when, then
             mockMvc.perform(delete(URL_NEWS + "/" + newsId)
@@ -605,7 +598,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
                     .andExpectAll(
                             status().isForbidden());
 
-            stopMockWebServer();
+            managerMockWebServer.stopMockWebServer();
         }
 
         @Test
@@ -614,7 +607,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
             UUID newsId = ID_NEWS;
             String userResponseJson = objectMapper.writeValueAsString(UserTestData.getUserResponseAdmin());
 
-            startMockWebServer(userResponseJson);
+            managerMockWebServer.startMockWebServer(userResponseJson);
 
             // when, then
             mockMvc.perform(delete(URL_NEWS + "/" + newsId)
@@ -625,34 +618,7 @@ class NewsControllerTest extends PostgresSqlContainerInitializer {
                             jsonPath("$.error_message")
                                     .value(ErrorMessage.NEWS_NOT_FOUND.getMessage() + newsId));
 
-            stopMockWebServer();
+            managerMockWebServer.stopMockWebServer();
         }
     }
-
-    private void startMockWebServer(String userResponseJson) throws IOException {
-        mockWebServer = new MockWebServer();
-        final Dispatcher dispatcher = new Dispatcher() {
-            @Override
-            public @NotNull MockResponse dispatch(RecordedRequest request) {
-                assert request.getPath() != null;
-                if (request.getPath().startsWith("/api/v1/admin/")) {
-                    return new MockResponse()
-                            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                            .setBody(userResponseJson);
-                } else if (request.getPath().equals("/api/v1/users/details")) {
-                    return new MockResponse()
-                            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                            .setBody(userResponseJson);
-                }
-                return new MockResponse().setResponseCode(404);
-            }
-        };
-        mockWebServer.setDispatcher(dispatcher);
-        mockWebServer.start(8081);
-    }
-
-    private void stopMockWebServer() throws IOException {
-        mockWebServer.shutdown();
-    }
 }
-

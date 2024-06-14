@@ -55,6 +55,6 @@ public class InitData {
     public static String EMAIL_JOURNALIST_FOR_IT = "smirnov@google.com";
     public static String EMAIL_SUBSCRIBER_FOR_IT = "pronina@google.com";
 
-
-
+    public static String URL_NEWS_HISTORY = "/api/v1/history/news";
+    public static String URL_NEWS_HISTORY_IN_PERIOD = "/api/v1/history/news/period/";
 }

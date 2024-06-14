@@ -17,6 +17,12 @@ import java.util.UUID;
 public class NewsValidator {
     private final NewsRepository newsRepository;
 
+    public void validateExists(UUID newsId) {
+        if (!newsRepository.existsById(newsId)) {
+            throw new NotFoundException(ErrorMessage.NEWS_NOT_FOUND.getMessage() + newsId);
+        }
+    }
+
     public Boolean isAuthor(UUID newsId, UUID userId) {
         News news = getNewsOrThrowException(newsId);
         if (!userId.equals(news.getIdAuthor())) {
