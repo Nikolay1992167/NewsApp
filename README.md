@@ -1,6 +1,7 @@
 # News Service
 
-A service for working with news and their comments.
+A service for working with news and their comments. The service implements saving the history of changes 
+in the News entity and viewing data on changes by newsID.
 
 ### Technologies that I used on the project:
 
@@ -15,6 +16,7 @@ A service for working with news and their comments.
 * Spring-boot-starter-security
 * Spring-boot-configuration-processor
 * Springdoc-openapi-starter-webmvc-ui 2.1.0
+* Hibernate-envers 6.5.2.Final
 * Spring-boot-starter-data-redis
 * Mapstruct 1.5.3.Final
 * JpaModelGen
