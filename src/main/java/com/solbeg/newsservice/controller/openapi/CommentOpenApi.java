@@ -442,8 +442,8 @@ public interface CommentOpenApi {
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                             {
-                                                "timestamp": "2024-04-18T15:31:06.6601526",
-                                                "error_message": "{text=размер должен находиться в диапазоне от 3 до 500}",
+                                                "timestamp": "2024-06-16T12:41:36.180800357",
+                                                "error_message": "{text=The length of the data should be from 3 to 500 characters!}",
                                                 "error_status": 400
                                             }
                                     """))),

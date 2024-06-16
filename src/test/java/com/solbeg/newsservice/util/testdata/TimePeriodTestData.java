@@ -12,4 +12,11 @@ public class TimePeriodTestData {
                 .endDate(LocalDateTime.now())
                 .build();
     }
+
+    public static TimePeriod getTimePeriodIncorrect() {
+        return TimePeriod.builder()
+                .startDate(LocalDateTime.now())
+                .endDate(LocalDateTime.now().minusDays(5))
+                .build();
+    }
 }

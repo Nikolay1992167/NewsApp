@@ -5,6 +5,7 @@ import com.solbeg.newsservice.entity.News;
 import com.solbeg.newsservice.repository.NewsRepository;
 import com.solbeg.newsservice.service.AuditService;
 import com.solbeg.newsservice.validation.NewsValidator;
+import com.solbeg.newsservice.validation.TimeValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +33,7 @@ public class NewsAuditService implements AuditService<News> {
                                                                             LocalDateTime endDate,
                                                                             Pageable pageable) {
         newsValidator.validateExists(newsId);
+        TimeValidator.validateTimePeriod(startDate, endDate);
         return findHistoryInPeriod(newsId, startDate, endDate, pageable, newsRepository);
     }
 }

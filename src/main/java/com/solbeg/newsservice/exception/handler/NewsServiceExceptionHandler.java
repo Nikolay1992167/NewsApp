@@ -5,10 +5,10 @@ import com.solbeg.newsservice.exception.CreateObjectException;
 import com.solbeg.newsservice.exception.CustomServerException;
 import com.solbeg.newsservice.exception.NotFoundException;
 import com.solbeg.newsservice.exception.ParsingException;
+import com.solbeg.newsservice.exception.TimePeriodException;
 import com.solbeg.newsservice.exception.model.IncorrectData;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,6 +21,11 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class NewsServiceExceptionHandler {
+
+    @ExceptionHandler(TimePeriodException.class)
+    public ResponseEntity<IncorrectData> timePeriodException(TimePeriodException exception) {
+        return getResponse(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(ParsingException.class)
     public ResponseEntity<IncorrectData> parsingException(ParsingException exception) {
@@ -35,11 +40,6 @@ public class NewsServiceExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<IncorrectData> methodArgumentTypeMismatchException(MethodArgumentTypeMismatchException exception) {
         return getResponse("UUID was entered incorrectly!", HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<IncorrectData> httpMessageNotReadableException(HttpMessageNotReadableException exception) {
-        return getResponse("Incorrectly entered newsId", HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

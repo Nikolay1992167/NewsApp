@@ -1,5 +1,6 @@
 package com.solbeg.newsservice.controller;
 
+import com.solbeg.newsservice.controller.openapi.HistoryNewsOpenApi;
 import com.solbeg.newsservice.dto.request.TimePeriod;
 import com.solbeg.newsservice.dto.response.HistoryResponse;
 import com.solbeg.newsservice.service.impl.NewsAuditService;
@@ -19,7 +20,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/history/news")
-public class HistoryNewsController {
+public class HistoryNewsController implements HistoryNewsOpenApi {
     private final NewsAuditService newsAuditService;
 
     @PreAuthorize("hasAuthority('ADMIN')")

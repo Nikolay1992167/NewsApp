@@ -9,7 +9,8 @@ public enum ErrorMessage {
     ERROR_CREATE_OBJECT("News didn't create!"),
     ERROR_CHANGE("You have no right to change the data of other users!"),
     ERROR_EXTRACTION("Cannot get user ID!"),
-    ERROR_PARSING_RESPONSE_TO_ERROR("Error parsing response from a third-party service!");
+    ERROR_PARSING_RESPONSE_TO_ERROR("Error parsing response from a third-party service!"),
+    ERROR_TIME_MESSAGE("StartDate must be earlier than EndDate, and they cannot be the same date.");
 
     private final String message;
 

@@ -286,8 +286,8 @@ public interface NewsOpenApi {
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                             {
-                                                "timestamp": "2024-04-20T22:49:56.0696022",
-                                                "error_message": "{title=размер должен находиться в диапазоне от 5 до 100}",
+                                                "timestamp": "2024-06-16T17:42:35.657178117",
+                                                "error_message": "{text=The length of the data should be from 3 to 500 characters!}",
                                                 "error_status": 400
                                             }
                                     """))),
@@ -336,7 +336,7 @@ public interface NewsOpenApi {
                                           "text": "The weather is determined by an eastern cyclone with abundant rainfall.",
                                           "idAuthor": "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12"
                                     }
-                                            """))),
+                                    """))),
                     @ApiResponse(responseCode = "401", description = "Token is not entered.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
@@ -350,8 +350,8 @@ public interface NewsOpenApi {
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = IncorrectData.class), examples = @ExampleObject("""
                                             {
-                                                "timestamp": "2024-04-20T22:49:56.0696022",
-                                                "error_message": "{title=размер должен находиться в диапазоне от 5 до 100}",
+                                                "timestamp": "2024-06-16T17:42:35.657178117",
+                                                "error_message": "{text=The length of the data should be from 5 to 100 characters!}",
                                                 "error_status": 400
                                             }
                                     """))),

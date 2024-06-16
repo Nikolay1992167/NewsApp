@@ -2,6 +2,7 @@ package com.solbeg.newsservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.solbeg.newsservice.dto.request.TimePeriod;
+import com.solbeg.newsservice.enams.ErrorMessage;
 import com.solbeg.newsservice.util.JwtTokenTestUtils;
 import com.solbeg.newsservice.util.ManagerMockWebServer;
 import com.solbeg.newsservice.util.PostgresSqlContainerInitializer;
@@ -26,6 +27,7 @@ import static com.solbeg.newsservice.util.init.InitData.URL_NEWS_HISTORY_IN_PERI
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
@@ -93,7 +95,7 @@ class HistoryNewsControllerTest extends PostgresSqlContainerInitializer {
     }
 
     @Test
-    void shouldCheckFindHistoryOfCommentForTimePeriodAndReturnStatus200() throws Exception {
+    void shouldCheckFindHistoryOfNewsForTimePeriodAndReturnStatus200() throws Exception {
         // given
         UUID newsId = ID_NEWS_FOR_IT;
         String userResponseJson = objectMapper.writeValueAsString(UserTestData.getUserResponseAdmin());
@@ -113,7 +115,7 @@ class HistoryNewsControllerTest extends PostgresSqlContainerInitializer {
     }
 
     @Test
-    void shouldCheckFindHistoryOfCommentForTimePeriodAndReturnStatus404WhenNewsNotExist() throws Exception {
+    void shouldCheckFindHistoryOfNewsForTimePeriodAndReturnStatus404WhenNewsNotExist() throws Exception {
         // given
         UUID newsId = ID_NEWS;
         String userResponseJson = objectMapper.writeValueAsString(UserTestData.getUserResponseAdmin());
@@ -133,7 +135,7 @@ class HistoryNewsControllerTest extends PostgresSqlContainerInitializer {
     }
 
     @Test
-    void shouldCheckFindHistoryOfCommentForTimePeriodAndReturnStatus401WhenUserNotAuthorization() throws Exception {
+    void shouldCheckFindHistoryOfNewsForTimePeriodAndReturnStatus401WhenUserNotAuthorization() throws Exception {
         // given
         UUID newsId = ID_NEWS_FOR_IT;
         String userResponseJson = objectMapper.writeValueAsString(UserTestData.getUserResponseAdmin());
@@ -147,6 +149,28 @@ class HistoryNewsControllerTest extends PostgresSqlContainerInitializer {
                         .contentType(APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isUnauthorized());
+
+        managerMockWebServer.stopMockWebServer();
+    }
+
+    @Test
+    void shouldCheckFindHistoryOfNewsForTimePeriodAndReturnStatus400WhenTimePeriodIncorrect() throws Exception {
+        // given
+        UUID newsId = ID_NEWS_FOR_IT;
+        String userResponseJson = objectMapper.writeValueAsString(UserTestData.getUserResponseAdmin());
+        TimePeriod timePeriod = TimePeriodTestData.getTimePeriodIncorrect();
+        String json = objectMapper.writeValueAsString(timePeriod);
+
+        managerMockWebServer.startMockWebServer(userResponseJson);
+
+        // when, then
+        mockMvc.perform(get(URL_NEWS_HISTORY_IN_PERIOD + "/" + newsId)
+                        .header(AUTHORIZATION, BEARER + tokenAdmin)
+                        .contentType(APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error_message")
+                        .value(ErrorMessage.ERROR_TIME_MESSAGE.getMessage()));
 
         managerMockWebServer.stopMockWebServer();
     }

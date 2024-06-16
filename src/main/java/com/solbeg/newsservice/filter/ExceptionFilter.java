@@ -1,5 +1,6 @@
 package com.solbeg.newsservice.filter;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.solbeg.newsservice.exception.model.IncorrectData;
 import jakarta.servlet.FilterChain;
@@ -30,7 +31,7 @@ public class ExceptionFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
         } catch (RestClientException exception) {
-            handleException(response, exception, HttpStatus.SERVICE_UNAVAILABLE);
+            handleException(response, exception, HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (RuntimeException exception) {
             handleException(response, exception, HttpStatus.UNAUTHORIZED);
         }
@@ -40,11 +41,28 @@ public class ExceptionFilter extends OncePerRequestFilter {
         response.setStatus(status.value());
         response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.toString());
         response.setCharacterEncoding("utf-8");
-        IncorrectData incorrectData = new IncorrectData(
-                LocalDateTime.now(),
-                exception.getMessage(),
-                status.value());
+
+        String errorMessage = exception.getMessage();
+        IncorrectData incorrectData;
+
+        if (errorMessage.matches("^\\d{3} :.*")) {
+            incorrectData = getIncorrectDataFromExceptionMessage(errorMessage);
+        } else {
+            incorrectData = IncorrectData.builder()
+                    .timestamp(LocalDateTime.now())
+                    .errorMessage(exception.getMessage())
+                    .errorStatus(status.value())
+                    .build();
+        }
         String responseMessage = mapper.writeValueAsString(incorrectData);
         response.getWriter().write(responseMessage);
+    }
+
+    private IncorrectData getIncorrectDataFromExceptionMessage(String errorMessage) throws JsonProcessingException {
+        errorMessage = errorMessage.split(" : ", 2)[1]
+                .replace("\\\"", "\"")
+                .replace("\"{", "{")
+                .replace("}\"", "}");
+        return mapper.readValue(errorMessage, IncorrectData.class);
     }
 }
