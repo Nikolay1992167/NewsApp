@@ -2,13 +2,14 @@ package com.solbeg.newsservice.exception.handler;
 
 import com.solbeg.newsservice.exception.AccessException;
 import com.solbeg.newsservice.exception.CreateObjectException;
-import com.solbeg.newsservice.exception.CustomServerException;
 import com.solbeg.newsservice.exception.NotFoundException;
 import com.solbeg.newsservice.exception.ParsingException;
 import com.solbeg.newsservice.exception.TimePeriodException;
 import com.solbeg.newsservice.exception.model.IncorrectData;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,6 +23,14 @@ import java.util.Map;
 @RestControllerAdvice
 public class NewsServiceExceptionHandler {
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<IncorrectData> exception(Exception exception) throws Exception {
+        if (exception instanceof AccessDeniedException || exception instanceof AuthenticationException) {
+            throw exception;
+        }
+        return getResponse(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     @ExceptionHandler(TimePeriodException.class)
     public ResponseEntity<IncorrectData> timePeriodException(TimePeriodException exception) {
         return getResponse(exception.getMessage(), HttpStatus.BAD_REQUEST);
@@ -30,11 +39,6 @@ public class NewsServiceExceptionHandler {
     @ExceptionHandler(ParsingException.class)
     public ResponseEntity<IncorrectData> parsingException(ParsingException exception) {
         return getResponse(exception.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(CustomServerException.class)
-    public ResponseEntity<IncorrectData> customServerException(CustomServerException exception) {
-        return getResponse(exception.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
