@@ -7,11 +7,13 @@ import lombok.Builder;
 
 import java.util.UUID;
 
+import static com.solbeg.newsservice.util.Constants.SIZE_FROM_3_TO_500_CHARACTERS;
+
 @Builder
 public record CreateCommentDto(
 
         @NotBlank
-        @Size(min = 3, max = 500)
+        @Size(min = 3, max = 500, message = SIZE_FROM_3_TO_500_CHARACTERS)
         String text,
 
         @NotNull

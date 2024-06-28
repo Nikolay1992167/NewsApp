@@ -6,11 +6,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.repository.history.RevisionRepository;
 
 import java.util.Optional;
 import java.util.UUID;
 
-public interface NewsRepository extends BaseJpaRepository<News, UUID> {
+public interface NewsRepository extends BaseJpaRepository<News, UUID>, RevisionRepository<News, UUID, Long> {
 
     @EntityGraph(attributePaths = "comments")
     Optional<News> findById(UUID newsId);
