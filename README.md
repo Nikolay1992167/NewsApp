@@ -1,7 +1,8 @@
 # News Service
 
-A service for working with news and their comments. The service implements saving the history of changes 
-in the News entity and viewing data on changes by newsID.
+* A service for working with news and their comments. The service implements saving the history of changes 
+* in the News entity and viewing data on changes by newsID.
+* This service works in conjunction with other services: config service, user service and email service.
 
 ### Technologies that I used on the project:
 
